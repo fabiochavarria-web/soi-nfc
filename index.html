@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuerdo Sōi</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 2rem 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .tarjeta {
+            max-width: 380px;
+            width: 100%;
+        }
+        h1 { margin-bottom: 4px; font-size: 1.6rem; }
+        h2 { margin-top: 0; font-size: 0.95rem; color: #d4af37; font-weight: 400; }
+        p { font-size: 0.9rem; line-height: 1.5; color: #cccccc; margin: 1.5rem 0; }
+        .reproductor {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            background: #000;
+        }
+        iframe { border: none; width: 100%; height: 352px; display: block; }
+        .firma { font-size: 0.75rem; color: #666; margin-top: 2rem; }
+    </style>
+</head>
+<body>
+
+    <div class="tarjeta">
+        <h1 id="titulo">Cargando recuerdo...</h1>
+        <h2 id="subtitulo"></h2>
+        
+        <div class="reproductor" id="reproductor"></div>
+
+        <p id="mensaje"></p>
+
+        <div class="firma">Diseñado por Sōi 3D</div>
+    </div>
+
+    <script>
+        // Simulamos la lectura directa del registro demo1
+        const datos = {
+            titulo: "Nuestra Boda",
+            subtitulo: "Carlos & Ana — 15 Octubre 2026",
+            mensaje: "Gracias por acompañarnos. Escanea este recuerdo cada vez que quieras revivir este momento.",
+            spotify_url: "https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M"
+        };
+
+        document.getElementById('titulo').textContent = datos.titulo;
+        document.getElementById('subtitulo').textContent = datos.subtitulo;
+        document.getElementById('mensaje').textContent = datos.mensaje;
+        document.getElementById('reproductor').innerHTML = 
+            `<iframe src="${datos.spotify_url}" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+    </script>
+</body>
+</html>

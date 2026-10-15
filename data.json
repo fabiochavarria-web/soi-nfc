@@ -1,0 +1,10 @@
+{
+  "demo1": {
+    "tipo": "spotify",
+    "titulo": "Nuestra Boda",
+    "subtitulo": "Carlos & Ana — 15 Octubre 2026",
+    "mensaje": "Gracias por acompañarnos. Escanea este recuerdo cada vez que quieras revivir este momento.",
+    "media_url": "https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M",
+    "tema": "dark"
+  }
+}
