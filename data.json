@@ -1,10 +1,35 @@
 {
   "demo1": {
-    "tipo": "spotify",
-    "titulo": "Nuestra Boda",
-    "subtitulo": "Carlos & Ana — 15 Octubre 2026",
-    "mensaje": "Gracias por acompañarnos. Escanea este recuerdo cada vez que quieras revivir este momento.",
-    "media_url": "https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M",
-    "tema": "dark"
+    "titulo": "María & Esteban",
+    "subtitulo": "Nuestra Boda — 15 de Octubre, 2026",
+    "colorPrincipal": "#2E7D32",
+    "colorSecundario": "#E65100",
+    "colorFondo": "#0F172A",
+    "fotoPrincipal": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80",
+    "galeriaFotos": [
+      "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=800&q=80"
+    ],
+    "audioMensaje": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "spotifyTrackId": "4cOdK2wGLETKBW3PvgPWqT",
+    "dedicatoria": "Gracias por acompañarnos a celebrar el inicio de nuestro viaje juntos.",
+    "mensajeEspecial": "Los momentos más hermosos de la vida son aquellos que compartimos con quienes amamos."
+  },
+  "demo2": {
+    "titulo": "En Memoria de Bruno",
+    "subtitulo": "Siempre en Nuestros Corazones (2014 — 2026)",
+    "colorPrincipal": "#1565C0",
+    "colorSecundario": "#6A1B9A",
+    "colorFondo": "#0F172A",
+    "fotoPrincipal": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80",
+    "galeriaFotos": [
+      "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=800&q=80"
+    ],
+    "audioMensaje": "",
+    "spotifyTrackId": "1u81x3o1JpS301A4zYtG3O",
+    "dedicatoria": "Gracias por 12 años de amor incondicional y compañía infinita.",
+    "mensajeEspecial": "Cruzaste el puente del arcoíris, pero te quedaste para siempre en nuestro hogar."
   }
 }
