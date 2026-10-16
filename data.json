@@ -29,5 +29,21 @@
     "spotifyTrackId": "1u81x3o1JpS301A4zYtG3O",
     "dedicatoria": "Gracias por 12 años de amor incondicional y compañía infinita.",
     "mensajeEspecial": "Cruzaste el puente del arcoíris, pero te quedaste para siempre en nuestro hogar."
+  },
+  "bautizo1": {
+    "titulo": "Bautizo de Mateo",
+    "subtitulo": "Recibiendo la luz — 16 de Octubre, 2026",
+    "colorPrincipal": "#81D4FA",
+    "colorSecundario": "#FFB300",
+    "colorFondo": "#F0F4F8",
+    "fotoPrincipal": "https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=800&q=80",
+    "galeriaFotos": [
+      "https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1555252834-315143a579ae?auto=format&fit=crop&w=800&q=80"
+    ],
+    "audioMensaje": "",
+    "spotifyTrackId": "5V2wEwTHTVpY1L9GikgX4a",
+    "dedicatoria": "Gracias por acompañarnos en este día tan especial y ser parte de la vida de nuestro pequeño Mateo.",
+    "mensajeEspecial": "Que la luz y el amor lo acompañen todos los días de su vida."
   }
 }
