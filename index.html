@@ -91,8 +91,7 @@
       const r = parseInt(cleanHex.substring(0, 2), 16) || 0;
       const g = parseInt(cleanHex.substring(2, 4), 16) || 0;
       const b = parseInt(cleanHex.substring(4, 6), 16) || 0;
-      const yiq = (r * 299 + g * 587 + b * 114) / 1000;
-      return yiq >= 140;
+      return ((r * 299 + g * 587 + b * 114) / 1000) >= 140;
     }
 
     function extraerYoutubeId(url) {
@@ -119,17 +118,22 @@
 
         const info = docSnap.data();
 
-        // 1. Colores y Contraste
+        // 1. Configuración de Colores
         const colorPrincipal = info.colorPrincipal || '#81D4FA';
         const colorSecundario = info.colorSecundario || '#FFFFFF';
         const colorFondo = info.colorFondo || '#F0F4F8';
+
+        const esClara = esColorClaro(colorSecundario);
+        
+        // Colores de texto personalizados con respaldo automático
+        const colorTexto = info.colorTexto || (esClara ? '#0F172A' : '#FFFFFF');
+        const colorSubtexto = info.colorSubtexto || (esClara ? '#475569' : '#E2E8F0');
 
         document.body.style.backgroundColor = colorFondo;
 
         const card = document.getElementById('card-content');
         card.style.backgroundColor = colorSecundario;
 
-        const esClara = esColorClaro(colorSecundario);
         const elTitulo = document.getElementById('titulo');
         const elSubtitulo = document.getElementById('subtitulo');
         const secMensaje = document.getElementById('sec-mensaje');
@@ -141,32 +145,27 @@
         const footerLogo = document.getElementById('footer-logo');
         const footerSub = document.getElementById('footer-sub');
 
+        // Aplicación directa de los colores de texto
+        elTitulo.style.color = colorTexto;
+        elDedicatoria.style.color = colorTexto;
+        footerLogo.style.color = colorTexto;
+
+        elSubtitulo.style.color = colorSubtexto;
+        elMensajeEsp.style.color = colorSubtexto;
+        lblMusica.style.color = colorSubtexto;
+        footerLema.style.color = colorSubtexto;
+        footerSub.style.color = colorSubtexto;
+
         if (esClara) {
-          card.classList.add('border', 'border-slate-200/80', 'text-slate-800');
-          elTitulo.style.color = '#0F172A';
-          elSubtitulo.style.color = '#64748B';
-          secMensaje.style.backgroundColor = 'rgba(0, 0, 0, 0.03)';
-          secMensaje.style.borderColor = 'rgba(0, 0, 0, 0.06)';
-          elDedicatoria.style.color = '#334155';
-          elMensajeEsp.style.color = '#64748B';
-          lblMusica.style.color = '#64748B';
+          card.classList.add('border', 'border-black/10');
+          secMensaje.style.backgroundColor = 'rgba(0, 0, 0, 0.04)';
+          secMensaje.style.borderColor = 'rgba(0, 0, 0, 0.08)';
           cardFooter.style.borderColor = 'rgba(0, 0, 0, 0.08)';
-          footerLema.style.color = '#94A3B8';
-          footerLogo.style.color = '#0F172A';
-          footerSub.style.color = '#94A3B8';
         } else {
-          card.classList.add('border', 'border-slate-700/50', 'text-slate-100');
-          elTitulo.style.color = '#FFFFFF';
-          elSubtitulo.style.color = '#94A3B8';
-          secMensaje.style.backgroundColor = 'rgba(255, 255, 255, 0.06)';
-          secMensaje.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-          elDedicatoria.style.color = '#E2E8F0';
-          elMensajeEsp.style.color = '#94A3B8';
-          lblMusica.style.color = '#94A3B8';
-          cardFooter.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-          footerLema.style.color = '#64748B';
-          footerLogo.style.color = '#FFFFFF';
-          footerSub.style.color = '#64748B';
+          card.classList.add('border', 'border-white/10');
+          secMensaje.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+          secMensaje.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+          cardFooter.style.borderColor = 'rgba(255, 255, 255, 0.15)';
         }
 
         document.getElementById('divider').style.backgroundColor = colorPrincipal;
@@ -198,7 +197,7 @@
           secMensaje.classList.remove('hidden');
         }
 
-        // 5. Audio / Video con Selección de Modo
+        // 5. Audio / Video
         const trackRaw = info.audioId || info.spotifyTrackId;
         const plataforma = info.plataformaAudio || 'spotify';
         const modoVisual = info.modoReproductor || (plataforma === 'youtube' ? 'video' : 'audio');
@@ -209,82 +208,4 @@
           if (plataforma === 'mp3') {
             lblMusica.innerHTML = '<i id="icon-music" class="fa-solid fa-volume-high"></i> Mensaje / Audio Directo';
             spotifyContainer.innerHTML = `
-              <div class="p-3 bg-slate-900/10 rounded-2xl border border-black/5">
-                <audio controls class="w-full">
-                  <source src="${trackRaw}" type="audio/mpeg">
-                  Tu navegador no soporta el audio.
-                </audio>
-              </div>`;
-          } else if (plataforma === 'youtube' || plataforma === 'ytmusic') {
-            const ytId = extraerYoutubeId(trackRaw);
-            
-            if (modoVisual === 'audio') {
-              // Modo Barra de Audio Compacta (80px)
-              lblMusica.innerHTML = '<i id="icon-music" class="fa-solid fa-headphones"></i> Audio del Recuerdo';
-              spotifyContainer.innerHTML = `
-                <div class="w-full h-20 rounded-2xl overflow-hidden shadow-sm bg-slate-950 border border-black/5">
-                  <iframe 
-                    class="w-full h-full" 
-                    src="https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&playsinline=1&rel=0" 
-                    title="Audio" 
-                    frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowfullscreen>
-                  </iframe>
-                </div>`;
-            } else {
-              // Modo Video Completo (16:9)
-              lblMusica.innerHTML = '<i id="icon-music" class="fa-solid fa-play"></i> Video del Recuerdo';
-              spotifyContainer.innerHTML = `
-                <div class="w-full aspect-video rounded-2xl overflow-hidden shadow-sm bg-slate-950 border border-black/5">
-                  <iframe 
-                    class="w-full h-full" 
-                    src="https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&playsinline=1&rel=0" 
-                    title="Video" 
-                    frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowfullscreen>
-                  </iframe>
-                </div>`;
-            }
-          } else {
-            // Spotify
-            lblMusica.innerHTML = '<i id="icon-music" class="fa-solid fa-music"></i> Canción del Recuerdo';
-            const cleanSpotifyId = trackRaw.includes('/track/') 
-              ? trackRaw.split('/track/')[1].split('?')[0] 
-              : trackRaw.trim();
-            const spotifyHeight = modoVisual === 'audio' ? '80' : '152';
-
-            spotifyContainer.innerHTML = `
-              <iframe 
-                style="border-radius:16px" 
-                src="https://open.spotify.com/embed/track/${cleanSpotifyId}?utm_source=generator&theme=0" 
-                width="100%" 
-                height="${spotifyHeight}" 
-                frameBorder="0" 
-                allowfullscreen="" 
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                loading="lazy">
-              </iframe>`;
-          }
-
-          const iconMusic = document.getElementById('icon-music');
-          if (iconMusic) iconMusic.style.color = colorPrincipal;
-
-          secSpotify.classList.remove('hidden');
-        }
-
-        // 6. Transición
-        document.getElementById('loader').classList.add('hidden');
-        card.classList.remove('hidden');
-
-      } catch (error) {
-        console.error("Error al cargar recuerdo:", error);
-        document.body.innerHTML = '<p class="text-center text-slate-400 mt-10">Error de conexión al cargar el recuerdo.</p>';
-      }
-    }
-
-    cargarRecuerdo();
-  </script>
-</body>
-</html>
+              <div class="p-3 bg-black/10 rounded-2xl border border-black/
