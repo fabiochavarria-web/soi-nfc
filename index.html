@@ -77,12 +77,12 @@
   </main>
 
   <!-- Script de Carga y Aplicación de Colores -->
-  <!-- Importar Firebase desde CDN -->
+<!-- Importar Firebase desde CDN -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
   import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-  // 1. Configuración de Firebase obtenida de tu proyecto
+  // 1. Configuración de Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyD20eQRuXkW3ayx5l49lvd8nJ-X7Mar-WA",
     authDomain: "soi-nfc-db.firebaseapp.com",
@@ -106,7 +106,7 @@
     }
 
     try {
-      // 3. Consultar Firestore en la colección "recuerdos"
+      // 3. Consultar Firestore
       const docRef = doc(db, "recuerdos", recuerdoId);
       const docSnap = await getDoc(docRef);
 
@@ -143,9 +143,23 @@
         document.getElementById('main-photo').src = info.fotoPrincipal;
       }
 
-      // Reproductor de Spotify
-      if (info.spotifyTrackId && document.getElementById('spotify-player')) {
-        document.getElementById('spotify-player').src = `https://open.spotify.com/embed/track/${info.spotifyTrackId}?utm_source=generator&theme=0`;
+      // Reproductor de Audio (Spotify)
+      const trackId = info.audioId || info.spotifyTrackId;
+      if (trackId && document.getElementById('spotify-player')) {
+        document.getElementById('spotify-player').src = `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0`;
+      }
+
+      // 6. Ocultar pantalla de carga y revelar la tarjeta principal
+      const loadingEl = document.getElementById('loading') || document.getElementById('spinner')?.parentElement;
+      if (loadingEl) {
+        loadingEl.style.display = 'none';
+        loadingEl.classList.add('hidden');
+      }
+
+      const cardEl = document.getElementById('card') || document.getElementById('content') || document.querySelector('main');
+      if (cardEl) {
+        cardEl.classList.remove('hidden');
+        cardEl.style.display = '';
       }
 
     } catch (error) {
