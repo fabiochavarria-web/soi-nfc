@@ -3,80 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recuerdo Digital — Sōi</title>
+  <title>VIVO — Tu Recuerdo Permanece</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <style>
     body {
-      transition: background-color 0.5s ease;
+      transition: background-color 0.4s ease;
     }
-    .thumb-active {
-      border-color: var(--color-principal) !important;
-      transform: scale(1.05);
-      opacity: 1 !important;
+    #card-content {
+      transition: background-color 0.4s ease, color 0.4s ease;
     }
   </style>
 </head>
-<body id="body-bg" class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center p-4 sm:p-6 font-sans">
+<body id="body-bg" class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 font-sans">
 
   <!-- Estado de Carga -->
   <div id="loader" class="flex flex-col items-center justify-center min-h-[60vh]">
-    <div id="spinner" class="w-12 h-12 border-4 border-slate-700 border-t-amber-500 rounded-full animate-spin mb-4"></div>
-    <p class="text-slate-400 text-sm font-medium">Cargando recuerdo digital...</p>
+    <div id="spinner" class="w-12 h-12 border-4 border-slate-300 border-t-sky-400 rounded-full animate-spin mb-4"></div>
+    <p class="text-slate-500 text-sm font-medium">Cargando experiencia digital...</p>
   </div>
 
-  <!-- Contenedor Principal del Recuerdo -->
-  <main id="card-content" class="hidden w-full max-w-md bg-slate-800/90 backdrop-blur-md rounded-3xl p-6 shadow-2xl border border-slate-700/50 space-y-6 my-auto">
+  <!-- Contenedor Principal (Tarjeta Flotante VIVO) -->
+  <main id="card-content" class="hidden w-full max-w-md rounded-3xl p-6 sm:p-7 shadow-2xl space-y-6 my-auto transition-all">
     
     <!-- Encabezado y Titular -->
-    <header class="text-center space-y-2">
-      <span id="subtitulo" class="text-xs uppercase tracking-widest font-semibold text-slate-400 block"></span>
-      <h1 id="titulo" class="text-2xl sm:text-3xl font-bold tracking-tight text-white"></h1>
-      <div id="divider" class="w-16 h-1 mx-auto rounded-full my-2"></div>
+    <header class="text-center space-y-1.5">
+      <span id="subtitulo" class="text-xs uppercase tracking-widest font-semibold block"></span>
+      <h1 id="titulo" class="text-2xl sm:text-3xl font-extrabold tracking-tight"></h1>
+      <div id="divider" class="w-14 h-1 mx-auto rounded-full mt-2 mb-1"></div>
     </header>
 
     <!-- Galería / Foto Principal -->
     <section id="sec-fotos" class="hidden space-y-3">
-      <div class="relative overflow-hidden rounded-2xl shadow-lg aspect-square bg-slate-950 border border-slate-700/50">
+      <div class="relative overflow-hidden rounded-2xl shadow-md aspect-square bg-slate-100 border border-black/5">
         <img id="foto-activa" src="" alt="Recuerdo" class="w-full h-full object-cover transition-all duration-500">
       </div>
-      <!-- Miniaturas de la Galería -->
       <div id="carrusel-thumbs" class="flex gap-2 justify-center overflow-x-auto py-1 hidden"></div>
     </section>
 
     <!-- Dedicatoria y Mensaje Especial -->
-    <section id="sec-mensaje" class="hidden space-y-3 text-center bg-slate-900/60 p-4 rounded-2xl border border-slate-700/30">
-      <p id="dedicatoria" class="text-sm sm:text-base italic text-slate-200 leading-relaxed"></p>
-      <p id="mensaje-especial" class="text-xs text-slate-400 font-light"></p>
+    <section id="sec-mensaje" class="hidden space-y-2.5 text-center p-4 sm:p-5 rounded-2xl border transition-colors">
+      <p id="dedicatoria" class="text-sm sm:text-base italic leading-relaxed font-serif"></p>
+      <p id="mensaje-especial" class="text-xs font-light"></p>
     </section>
 
     <!-- Audio de Voz / Mensaje Grabado -->
     <section id="sec-audio" class="hidden space-y-2">
-      <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+      <p id="lbl-audio" class="text-xs font-semibold uppercase tracking-wider flex items-center gap-2">
         <i id="icon-mic" class="fa-solid fa-microphone"></i> Mensaje de Voz
       </p>
-      <audio id="reproductor-audio" controls class="w-full rounded-lg bg-slate-900"></audio>
+      <audio id="reproductor-audio" controls class="w-full rounded-lg"></audio>
     </section>
 
-    <!-- Música (Spotify / Reproductor Integrado) -->
+    <!-- Música (Spotify / YouTube Integrado) -->
     <section id="sec-spotify" class="hidden space-y-2">
-      <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+      <p id="lbl-musica" class="text-xs font-semibold uppercase tracking-wider flex items-center gap-2">
         <i id="icon-music" class="fa-solid fa-music"></i> Canción del Recuerdo
       </p>
-      <div id="spotify-container" class="rounded-2xl overflow-hidden shadow-md bg-slate-950"></div>
+      <div id="spotify-container" class="rounded-2xl overflow-hidden shadow-sm"></div>
     </section>
 
-    <!-- Pie de Página Sōi -->
-    <footer class="pt-4 border-t border-slate-700/50 text-center">
-      <a href="https://www.soigroupcr.com" target="_blank" class="inline-flex items-center gap-2 text-xs text-slate-500 hover:text-slate-300 transition-colors">
-        <span>Conectado por</span>
-        <span class="font-bold tracking-wider text-slate-300">SŌI RECUERDOS 3D</span>
+    <!-- Pie de Página: Identidad VIVO -->
+    <footer id="card-footer" class="pt-5 border-t text-center">
+      <a href="https://vivo.soigroupcr.com" target="_blank" class="inline-flex flex-col items-center gap-0.5 transition-opacity hover:opacity-75">
+        <span id="footer-lema" class="text-[10px] tracking-widest uppercase font-medium">Tu recuerdo permanece</span>
+        <span id="footer-logo" class="font-black tracking-[0.25em] text-sm">V I V O</span>
+        <span id="footer-sub" class="text-[9px] tracking-wider uppercase opacity-60">por Sōi Group</span>
       </a>
     </footer>
 
   </main>
 
-  <!-- Script de Carga y Conexión con Firebase -->
+  <!-- Script de Renderizado Dinámico y Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
@@ -96,9 +94,20 @@
     const urlParams = new URLSearchParams(window.location.search);
     const recuerdoId = urlParams.get('id');
 
+    // Función para calcular luminosidad de color HEX (#FFFFFF -> claro, #0F172A -> oscuro)
+    function esColorClaro(hex) {
+      if (!hex) return false;
+      const cleanHex = hex.replace('#', '');
+      const r = parseInt(cleanHex.substring(0, 2), 16) || 0;
+      const g = parseInt(cleanHex.substring(2, 4), 16) || 0;
+      const b = parseInt(cleanHex.substring(4, 6), 16) || 0;
+      const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+      return yiq >= 140;
+    }
+
     async function cargarRecuerdo() {
       if (!recuerdoId) {
-        document.body.innerHTML = '<p class="text-center text-white mt-10">ID no especificado en la URL.</p>';
+        document.body.innerHTML = '<p class="text-center text-slate-400 mt-10">ID no especificado en la URL.</p>';
         return;
       }
 
@@ -107,64 +116,104 @@
         const docSnap = await getDoc(docRef);
 
         if (!docSnap.exists()) {
-          document.body.innerHTML = '<p class="text-center text-white mt-10">Recuerdo no encontrado en la base de datos.</p>';
+          document.body.innerHTML = '<p class="text-center text-slate-400 mt-10">Recuerdo no encontrado en la base de datos.</p>';
           return;
         }
 
         const info = docSnap.data();
 
-        // 1. Personalización de colores
-        const colorPrimary = info.colorPrincipal || '#81D4FA';
-        const colorSecondary = info.colorSecundario || '#FFB300';
-        const colorBg = info.colorFondo || '#0F172A';
+        // 1. Paleta de Colores
+        const colorPrincipal = info.colorPrincipal || '#81D4FA'; // Acento (Líneas, Íconos)
+        const colorSecundario = info.colorSecundario || '#FFFFFF'; // Fondo de la Tarjeta Flotante
+        const colorFondo = info.colorFondo || '#F0F4F8'; // Fondo general de la página
 
-        document.documentElement.style.setProperty('--color-principal', colorPrimary);
-        if (document.getElementById('body-bg')) {
-          document.getElementById('body-bg').style.backgroundColor = colorBg;
-        }
+        // Aplicar Fondo General
+        document.body.style.backgroundColor = colorFondo;
 
-        const divider = document.getElementById('divider');
-        if (divider) divider.style.backgroundColor = colorPrimary;
+        // Aplicar Color Secundario al cuerpo de la tarjeta
+        const card = document.getElementById('card-content');
+        card.style.backgroundColor = colorSecundario;
 
-        const iconMic = document.getElementById('icon-mic');
-        if (iconMic) iconMic.style.color = colorPrimary;
+        // Calcular Contraste Inteligente (Tarjeta Clara vs Tarjeta Oscura)
+        const esClara = esColorClaro(colorSecundario);
 
-        const iconMusic = document.getElementById('icon-music');
-        if (iconMusic) iconMusic.style.color = colorPrimary;
-
-        // 2. Encabezado
         const elTitulo = document.getElementById('titulo');
         const elSubtitulo = document.getElementById('subtitulo');
-        if (elTitulo) elTitulo.textContent = info.titulo || '';
-        if (elSubtitulo) elSubtitulo.textContent = info.subtitulo || '';
+        const secMensaje = document.getElementById('sec-mensaje');
+        const elDedicatoria = document.getElementById('dedicatoria');
+        const elMensajeEsp = document.getElementById('mensaje-especial');
+        const lblAudio = document.getElementById('lbl-audio');
+        const lblMusica = document.getElementById('lbl-musica');
+        const cardFooter = document.getElementById('card-footer');
+        const footerLema = document.getElementById('footer-lema');
+        const footerLogo = document.getElementById('footer-logo');
+        const footerSub = document.getElementById('footer-sub');
+
+        if (esClara) {
+          // Tipografía y bordes para tarjeta con fondo blanco / claro
+          card.classList.add('border', 'border-slate-200/80', 'text-slate-800');
+          elTitulo.style.color = '#0F172A';
+          elSubtitulo.style.color = '#64748B';
+          secMensaje.style.backgroundColor = 'rgba(0, 0, 0, 0.03)';
+          secMensaje.style.borderColor = 'rgba(0, 0, 0, 0.06)';
+          elDedicatoria.style.color = '#334155';
+          elMensajeEsp.style.color = '#64748B';
+          lblAudio.style.color = '#64748B';
+          lblMusica.style.color = '#64748B';
+          cardFooter.style.borderColor = 'rgba(0, 0, 0, 0.08)';
+          footerLema.style.color = '#94A3B8';
+          footerLogo.style.color = '#0F172A';
+          footerSub.style.color = '#94A3B8';
+        } else {
+          // Tipografía y bordes para tarjeta con fondo oscuro
+          card.classList.add('border', 'border-slate-700/50', 'text-slate-100');
+          elTitulo.style.color = '#FFFFFF';
+          elSubtitulo.style.color = '#94A3B8';
+          secMensaje.style.backgroundColor = 'rgba(255, 255, 255, 0.06)';
+          secMensaje.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+          elDedicatoria.style.color = '#E2E8F0';
+          elMensajeEsp.style.color = '#94A3B8';
+          lblAudio.style.color = '#94A3B8';
+          lblMusica.style.color = '#94A3B8';
+          cardFooter.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+          footerLema.style.color = '#64748B';
+          footerLogo.style.color = '#FFFFFF';
+          footerSub.style.color = '#64748B';
+        }
+
+        // Aplicar Color Principal (Acentos)
+        document.getElementById('divider').style.backgroundColor = colorPrincipal;
+        document.getElementById('spinner').style.borderTopColor = colorPrincipal;
+        document.getElementById('icon-mic').style.color = colorPrincipal;
+        document.getElementById('icon-music').style.color = colorPrincipal;
+
+        // 2. Textos
+        elTitulo.textContent = info.titulo || '';
+        elSubtitulo.textContent = info.subtitulo || '';
 
         // 3. Foto Principal
         const secFotos = document.getElementById('sec-fotos');
         const imgActiva = document.getElementById('foto-activa');
-        if (info.fotoPrincipal && imgActiva) {
+        if (info.fotoPrincipal) {
           imgActiva.src = info.fotoPrincipal;
-          secFotos?.classList.remove('hidden');
+          secFotos.classList.remove('hidden');
         }
 
-        // 4. Mensajes y Dedicatoria
-        const secMensaje = document.getElementById('sec-mensaje');
-        const elDedicatoria = document.getElementById('dedicatoria');
-        const elMensajeEsp = document.getElementById('mensaje-especial');
-        
+        // 4. Dedicatoria
         let tieneMensaje = false;
-        if (info.dedicatoria && elDedicatoria) {
+        if (info.dedicatoria) {
           elDedicatoria.textContent = `"${info.dedicatoria}"`;
           tieneMensaje = true;
         }
-        if (info.mensajeEspecial && elMensajeEsp) {
+        if (info.mensajeEspecial) {
           elMensajeEsp.textContent = info.mensajeEspecial;
           tieneMensaje = true;
         }
-        if (tieneMensaje && secMensaje) {
+        if (tieneMensaje) {
           secMensaje.classList.remove('hidden');
         }
 
-        // 5. Reproductor de Audio (Spotify o YouTube)
+        // 5. Audio / Música
         const trackId = info.audioId || info.spotifyTrackId;
         const plataforma = info.plataformaAudio || 'spotify';
         const secSpotify = document.getElementById('sec-spotify');
@@ -172,23 +221,20 @@
 
         if (trackId && spotifyContainer) {
           if (plataforma === 'youtube' || plataforma === 'ytmusic') {
-            spotifyContainer.innerHTML = `<iframe class="w-full aspect-video" src="https://www.youtube-nocookie.com/embed/${trackId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+            spotifyContainer.innerHTML = `<iframe class="w-full aspect-video rounded-xl" src="https://www.youtube-nocookie.com/embed/${trackId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
           } else {
             spotifyContainer.innerHTML = `<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
           }
-          secSpotify?.classList.remove('hidden');
+          secSpotify.classList.remove('hidden');
         }
 
-        // 6. Ocultar estado de carga y revelar tarjeta completa
-        const loader = document.getElementById('loader');
-        if (loader) loader.classList.add('hidden');
-
-        const cardContent = document.getElementById('card-content');
-        if (cardContent) cardContent.classList.remove('hidden');
+        // 6. Transición: ocultar loader y mostrar tarjeta
+        document.getElementById('loader').classList.add('hidden');
+        card.classList.remove('hidden');
 
       } catch (error) {
-        console.error("Error al cargar datos desde Firebase:", error);
-        document.body.innerHTML = '<p class="text-center text-white mt-10">Error de conexión al cargar el recuerdo.</p>';
+        console.error("Error al cargar recuerdo:", error);
+        document.body.innerHTML = '<p class="text-center text-slate-400 mt-10">Error de conexión al cargar el recuerdo.</p>';
       }
     }
 
