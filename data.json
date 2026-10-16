@@ -1,184 +1,33 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recuerdo Digital — Sōi</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-  <style>
-    body {
-      transition: background-color 0.5s ease;
-    }
-    .accent-bg {
-      transition: background-color 0.5s ease;
-    }
-    .accent-border {
-      transition: border-color 0.5s ease;
-    }
-    .accent-text {
-      transition: color 0.5s ease;
-    }
-  </style>
-</head>
-<body id="body-bg" class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center p-4 sm:p-6 font-sans">
-
-  <!-- Estado de Carga -->
-  <div id="loader" class="flex flex-col items-center justify-center min-h-[60vh]">
-    <div class="w-12 h-12 border-4 border-slate-700 border-t-amber-500 rounded-full animate-spin mb-4"></div>
-    <p class="text-slate-400 text-sm font-medium">Cargando recuerdo digital...</p>
-  </div>
-
-  <!-- Contenedor Principal del Recuerdo -->
-  <main id="card-content" class="hidden w-full max-w-md bg-slate-800/80 backdrop-blur-md rounded-3xl p-6 shadow-2xl border border-slate-700/50 space-y-6 my-auto">
-    
-    <!-- Encabezado y Titular -->
-    <header class="text-center space-y-2">
-      <span id="subtitulo" class="text-xs uppercase tracking-widest font-semibold text-slate-400 block"></span>
-      <h1 id="titulo" class="text-2xl sm:text-3xl font-bold tracking-tight text-white"></h1>
-      <div id="divider" class="w-16 h-1 mx-auto rounded-full my-2 accent-bg"></div>
-    </header>
-
-    <!-- Galería / Foto Principal -->
-    <section id="sec-fotos" class="hidden space-y-3">
-      <div class="relative overflow-hidden rounded-2xl shadow-lg aspect-square bg-slate-950 border border-slate-700/50">
-        <img id="foto-activa" src="" alt="Recuerdo" class="w-full h-full object-cover transition-all duration-500">
-      </div>
-      <!-- Miniaturas de la Galería -->
-      <div id="carrusel-thumbs" class="flex gap-2 justify-center overflow-x-auto py-1 hidden"></div>
-    </section>
-
-    <!-- Dedicatoria y Mensaje Especial -->
-    <section id="sec-mensaje" class="hidden space-y-3 text-center bg-slate-900/60 p-4 rounded-2xl border border-slate-700/30">
-      <p id="dedicatoria" class="text-sm sm:text-base italic text-slate-200 leading-relaxed"></p>
-      <p id="mensaje-especial" class="text-xs text-slate-400 font-light"></p>
-    </section>
-
-    <!-- Audio de Voz / Mensaje Grabado -->
-    <section id="sec-audio" class="hidden space-y-2">
-      <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-        <i class="fa-solid fa-[#microphone] accent-text"></i> Mensaje de Voz
-      </p>
-      <audio id="reproductor-audio" controls class="w-full rounded-lg bg-slate-900"></audio>
-    </section>
-
-    <!-- Música (Spotify / Reproductor Integrado) -->
-    <section id="sec-spotify" class="hidden space-y-2">
-      <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-        <i class="fa-solid fa-music accent-text"></i> Canción del Recuerdo
-      </p>
-      <div id="spotify-container" class="rounded-2xl overflow-hidden shadow-md bg-slate-950"></div>
-    </section>
-
-    <!-- Pie de Página Sōi -->
-    <footer class="pt-4 border-t border-slate-700/50 text-center">
-      <a href="https://www.soigroupcr.com" target="_blank" class="inline-flex items-center gap-2 text-xs text-slate-500 hover:text-slate-300 transition-colors">
-        <span>Conectado por</span>
-        <span class="font-bold tracking-wider text-slate-300">SŌI RECUERDOS 3D</span>
-      </a>
-    </footer>
-
-  </main>
-
-  <!-- Script para Renderizado Dinámico -->
-  <script>
-    async function cargarRecuerdo() {
-      const loader = document.getElementById('loader');
-      const card = document.getElementById('card-content');
-      
-      // Obtener el ID de la URL (?id=xxxx)
-      const urlParams = new URLSearchParams(window.location.search);
-      const recuerdoId = urlParams.get('id') || 'demo1';
-
-      try {
-        // Cargar datos desde data.json
-        const respuesta = await fetch('./data.json');
-        const datos = await respuesta.json();
-        const info = datos[recuerdoId];
-
-        if (!info) {
-          loader.innerHTML = '<p class="text-rose-400 font-medium">Recuerdo no encontrado.</p>';
-          return;
-        }
-
-        // 1. Aplicar Colores Personalizados
-        const colorPrimary = info.colorPrincipal || '#3B82F6';
-        const colorSecondary = info.colorSecundario || '#8B5CF6';
-        const colorBg = info.colorFondo || '#0F172A';
-
-        document.getElementById('body-bg').style.backgroundColor = colorBg;
-        document.getElementById('divider').style.backgroundColor = colorPrimary;
-
-        // Aplicar estilos dinámicos de acento
-        document.querySelectorAll('.accent-text').forEach(el => el.style.color = colorPrimary);
-        document.querySelectorAll('.accent-bg').forEach(el => el.style.backgroundColor = colorPrimary);
-
-        // 2. Renderizar Textos
-        document.getElementById('titulo').textContent = info.titulo || '';
-        document.getElementById('subtitulo').textContent = info.subtitulo || '';
-
-        if (info.dedicatoria || info.mensajeEspecial) {
-          document.getElementById('sec-mensaje').classList.remove('hidden');
-          document.getElementById('dedicatoria').textContent = info.dedicatoria ? `"${info.dedicatoria}"` : '';
-          document.getElementById('mensaje-especial').textContent = info.mensajeEspecial || '';
-        }
-
-        // 3. Renderizar Fotos / Galería
-        const fotos = info.galeriaFotos || (info.fotoPrincipal ? [info.fotoPrincipal] : []);
-        if (fotos.length > 0) {
-          document.getElementById('sec-fotos').classList.remove('hidden');
-          const fotoActiva = document.getElementById('foto-activa');
-          fotoActiva.src = fotos[0];
-
-          // Si hay más de 1 foto, mostrar miniatura/carrusel
-          if (fotos.length > 1) {
-            const carruselThumbs = document.getElementById('carrusel-thumbs');
-            carruselThumbs.classList.remove('hidden');
-            carruselThumbs.innerHTML = '';
-
-            fotos.forEach((url, idx) => {
-              const thumb = document.createElement('img');
-              thumb.src = url;
-              thumb.className = `w-12 h-12 object-cover rounded-lg cursor-pointer border-2 transition-all ${idx === 0 ? 'border-amber-400 scale-105' : 'border-transparent opacity-70'}`;
-              thumb.onclick = () => {
-                fotoActiva.src = url;
-                document.querySelectorAll('#carrusel-thumbs img').forEach(i => {
-                  i.classList.remove('border-amber-400', 'scale-105');
-                  i.classList.add('border-transparent', 'opacity-70');
-                });
-                thumb.classList.add('border-amber-400', 'scale-105');
-                thumb.classList.remove('border-transparent', 'opacity-70');
-              };
-              carruselThumbs.appendChild(thumb);
-            });
-          }
-        }
-
-        // 4. Renderizar Audio de Voz
-        if (info.audioMensaje) {
-          document.getElementById('sec-audio').classList.remove('hidden');
-          document.getElementById('reproductor-audio').src = info.audioMensaje;
-        }
-
-        // 5. Renderizar Spotify
-        if (info.spotifyTrackId) {
-          document.getElementById('sec-spotify').classList.remove('hidden');
-          document.getElementById('spotify-container').innerHTML = `
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/${info.spotifyTrackId}?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          `;
-        }
-
-        // Ocultar cargador y mostrar tarjeta
-        loader.classList.add('hidden');
-        card.classList.remove('hidden');
-
-      } catch (e) {
-        console.error(e);
-        loader.innerHTML = '<p class="text-rose-400 font-medium">Error al cargar el recuerdo.</p>';
-      }
-    }
-
-    window.onload = cargarRecuerdo;
-  </script>
-</body>
-</html>
+{
+  "demo1": {
+    "titulo": "María & Esteban",
+    "subtitulo": "Nuestra Boda — 15 de Octubre, 2026",
+    "colorPrincipal": "#2E7D32",
+    "colorSecundario": "#E65100",
+    "colorFondo": "#0F172A",
+    "fotoPrincipal": "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80",
+    "galeriaFotos": [
+      "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=800&q=80"
+    ],
+    "audioMensaje": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "spotifyTrackId": "4cOdK2wGLETKBW3PvgPWqT",
+    "dedicatoria": "Gracias por acompañarnos a celebrar el inicio de nuestro viaje juntos.",
+    "mensajeEspecial": "Los momentos más hermosos de la vida son aquellos que compartimos con quienes amamos."
+  },
+  "demo2": {
+    "titulo": "En Memoria de Bruno",
+    "subtitulo": "Siempre en Nuestros Corazones (2014 — 2026)",
+    "colorPrincipal": "#1565C0",
+    "colorSecundario": "#6A1B9A",
+    "colorFondo": "#0F172A",
+    "fotoPrincipal": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80",
+    "galeriaFotos": [
+      "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=800&q=80"
+    ],
+    "audioMensaje": "",
+    "spotifyTrackId": "1u81x3o1JpS301A4zYtG3O",
+    "dedicatoria": "Gracias por 12 años de amor incondicional y compañía infinita.",
+    "mensajeEspecial": "Cruzaste el puente del arcoíris, pero te quedaste para siempre en nuestro hogar."
+  }
+}
