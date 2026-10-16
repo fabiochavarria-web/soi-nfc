@@ -47,15 +47,7 @@
       <p id="mensaje-especial" class="text-xs font-light"></p>
     </section>
 
-    <!-- Audio de Voz / Mensaje Grabado -->
-    <section id="sec-audio" class="hidden space-y-2">
-      <p id="lbl-audio" class="text-xs font-semibold uppercase tracking-wider flex items-center gap-2">
-        <i id="icon-mic" class="fa-solid fa-microphone"></i> Mensaje de Voz
-      </p>
-      <audio id="reproductor-audio" controls class="w-full rounded-lg"></audio>
-    </section>
-
-    <!-- Música (Spotify / YouTube Integrado) -->
+    <!-- Música / Audio / Video Integrado -->
     <section id="sec-spotify" class="hidden space-y-2">
       <p id="lbl-musica" class="text-xs font-semibold uppercase tracking-wider flex items-center gap-2">
         <i id="icon-music" class="fa-solid fa-music"></i> Canción del Recuerdo
@@ -74,7 +66,6 @@
 
   </main>
 
-  <!-- Script de Renderizado Dinámico y Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
@@ -94,7 +85,6 @@
     const urlParams = new URLSearchParams(window.location.search);
     const recuerdoId = urlParams.get('id');
 
-    // Función para calcular luminosidad de color HEX (#FFFFFF -> claro, #0F172A -> oscuro)
     function esColorClaro(hex) {
       if (!hex) return false;
       const cleanHex = hex.replace('#', '');
@@ -103,6 +93,13 @@
       const b = parseInt(cleanHex.substring(4, 6), 16) || 0;
       const yiq = (r * 299 + g * 587 + b * 114) / 1000;
       return yiq >= 140;
+    }
+
+    function extraerYoutubeId(url) {
+      if (!url) return '';
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+      const match = url.match(regExp);
+      return (match && match[2].length === 11) ? match[2] : url.trim();
     }
 
     async function cargarRecuerdo() {
@@ -122,27 +119,22 @@
 
         const info = docSnap.data();
 
-        // 1. Paleta de Colores
-        const colorPrincipal = info.colorPrincipal || '#81D4FA'; // Acento (Líneas, Íconos)
-        const colorSecundario = info.colorSecundario || '#FFFFFF'; // Fondo de la Tarjeta Flotante
-        const colorFondo = info.colorFondo || '#F0F4F8'; // Fondo general de la página
+        // 1. Colores y Contraste
+        const colorPrincipal = info.colorPrincipal || '#81D4FA';
+        const colorSecundario = info.colorSecundario || '#FFFFFF';
+        const colorFondo = info.colorFondo || '#F0F4F8';
 
-        // Aplicar Fondo General
         document.body.style.backgroundColor = colorFondo;
 
-        // Aplicar Color Secundario al cuerpo de la tarjeta
         const card = document.getElementById('card-content');
         card.style.backgroundColor = colorSecundario;
 
-        // Calcular Contraste Inteligente (Tarjeta Clara vs Tarjeta Oscura)
         const esClara = esColorClaro(colorSecundario);
-
         const elTitulo = document.getElementById('titulo');
         const elSubtitulo = document.getElementById('subtitulo');
         const secMensaje = document.getElementById('sec-mensaje');
         const elDedicatoria = document.getElementById('dedicatoria');
         const elMensajeEsp = document.getElementById('mensaje-especial');
-        const lblAudio = document.getElementById('lbl-audio');
         const lblMusica = document.getElementById('lbl-musica');
         const cardFooter = document.getElementById('card-footer');
         const footerLema = document.getElementById('footer-lema');
@@ -150,7 +142,6 @@
         const footerSub = document.getElementById('footer-sub');
 
         if (esClara) {
-          // Tipografía y bordes para tarjeta con fondo blanco / claro
           card.classList.add('border', 'border-slate-200/80', 'text-slate-800');
           elTitulo.style.color = '#0F172A';
           elSubtitulo.style.color = '#64748B';
@@ -158,14 +149,12 @@
           secMensaje.style.borderColor = 'rgba(0, 0, 0, 0.06)';
           elDedicatoria.style.color = '#334155';
           elMensajeEsp.style.color = '#64748B';
-          lblAudio.style.color = '#64748B';
           lblMusica.style.color = '#64748B';
           cardFooter.style.borderColor = 'rgba(0, 0, 0, 0.08)';
           footerLema.style.color = '#94A3B8';
           footerLogo.style.color = '#0F172A';
           footerSub.style.color = '#94A3B8';
         } else {
-          // Tipografía y bordes para tarjeta con fondo oscuro
           card.classList.add('border', 'border-slate-700/50', 'text-slate-100');
           elTitulo.style.color = '#FFFFFF';
           elSubtitulo.style.color = '#94A3B8';
@@ -173,7 +162,6 @@
           secMensaje.style.borderColor = 'rgba(255, 255, 255, 0.1)';
           elDedicatoria.style.color = '#E2E8F0';
           elMensajeEsp.style.color = '#94A3B8';
-          lblAudio.style.color = '#94A3B8';
           lblMusica.style.color = '#94A3B8';
           cardFooter.style.borderColor = 'rgba(255, 255, 255, 0.1)';
           footerLema.style.color = '#64748B';
@@ -181,11 +169,8 @@
           footerSub.style.color = '#64748B';
         }
 
-        // Aplicar Color Principal (Acentos)
         document.getElementById('divider').style.backgroundColor = colorPrincipal;
         document.getElementById('spinner').style.borderTopColor = colorPrincipal;
-        document.getElementById('icon-mic').style.color = colorPrincipal;
-        document.getElementById('icon-music').style.color = colorPrincipal;
 
         // 2. Textos
         elTitulo.textContent = info.titulo || '';
@@ -199,7 +184,7 @@
           secFotos.classList.remove('hidden');
         }
 
-        // 4. Dedicatoria
+        // 4. Mensajes
         let tieneMensaje = false;
         if (info.dedicatoria) {
           elDedicatoria.textContent = `"${info.dedicatoria}"`;
@@ -213,22 +198,83 @@
           secMensaje.classList.remove('hidden');
         }
 
-        // 5. Audio / Música
-        const trackId = info.audioId || info.spotifyTrackId;
+        // 5. Audio / Video con Selección de Modo
+        const trackRaw = info.audioId || info.spotifyTrackId;
         const plataforma = info.plataformaAudio || 'spotify';
+        const modoVisual = info.modoReproductor || (plataforma === 'youtube' ? 'video' : 'audio');
         const secSpotify = document.getElementById('sec-spotify');
         const spotifyContainer = document.getElementById('spotify-container');
 
-        if (trackId && spotifyContainer) {
-          if (plataforma === 'youtube' || plataforma === 'ytmusic') {
-            spotifyContainer.innerHTML = `<iframe class="w-full aspect-video rounded-xl" src="https://www.youtube-nocookie.com/embed/${trackId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+        if (trackRaw && spotifyContainer) {
+          if (plataforma === 'mp3') {
+            lblMusica.innerHTML = '<i id="icon-music" class="fa-solid fa-volume-high"></i> Mensaje / Audio Directo';
+            spotifyContainer.innerHTML = `
+              <div class="p-3 bg-slate-900/10 rounded-2xl border border-black/5">
+                <audio controls class="w-full">
+                  <source src="${trackRaw}" type="audio/mpeg">
+                  Tu navegador no soporta el audio.
+                </audio>
+              </div>`;
+          } else if (plataforma === 'youtube' || plataforma === 'ytmusic') {
+            const ytId = extraerYoutubeId(trackRaw);
+            
+            if (modoVisual === 'audio') {
+              // Modo Barra de Audio Compacta (80px)
+              lblMusica.innerHTML = '<i id="icon-music" class="fa-solid fa-headphones"></i> Audio del Recuerdo';
+              spotifyContainer.innerHTML = `
+                <div class="w-full h-20 rounded-2xl overflow-hidden shadow-sm bg-slate-950 border border-black/5">
+                  <iframe 
+                    class="w-full h-full" 
+                    src="https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&playsinline=1&rel=0" 
+                    title="Audio" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                  </iframe>
+                </div>`;
+            } else {
+              // Modo Video Completo (16:9)
+              lblMusica.innerHTML = '<i id="icon-music" class="fa-solid fa-play"></i> Video del Recuerdo';
+              spotifyContainer.innerHTML = `
+                <div class="w-full aspect-video rounded-2xl overflow-hidden shadow-sm bg-slate-950 border border-black/5">
+                  <iframe 
+                    class="w-full h-full" 
+                    src="https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&playsinline=1&rel=0" 
+                    title="Video" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                  </iframe>
+                </div>`;
+            }
           } else {
-            spotifyContainer.innerHTML = `<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+            // Spotify
+            lblMusica.innerHTML = '<i id="icon-music" class="fa-solid fa-music"></i> Canción del Recuerdo';
+            const cleanSpotifyId = trackRaw.includes('/track/') 
+              ? trackRaw.split('/track/')[1].split('?')[0] 
+              : trackRaw.trim();
+            const spotifyHeight = modoVisual === 'audio' ? '80' : '152';
+
+            spotifyContainer.innerHTML = `
+              <iframe 
+                style="border-radius:16px" 
+                src="https://open.spotify.com/embed/track/${cleanSpotifyId}?utm_source=generator&theme=0" 
+                width="100%" 
+                height="${spotifyHeight}" 
+                frameBorder="0" 
+                allowfullscreen="" 
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                loading="lazy">
+              </iframe>`;
           }
+
+          const iconMusic = document.getElementById('icon-music');
+          if (iconMusic) iconMusic.style.color = colorPrincipal;
+
           secSpotify.classList.remove('hidden');
         }
 
-        // 6. Transición: ocultar loader y mostrar tarjeta
+        // 6. Transición
         document.getElementById('loader').classList.add('hidden');
         card.classList.remove('hidden');
 
