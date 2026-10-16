@@ -1,67 +1,183 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recuerdo Sōi</title>
-    <style>
-        body {
-            background-color: #121212;
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            margin: 0;
-            padding: 2rem 1rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            text-align: center;
-            box-sizing: border-box;
-        }
-        .tarjeta {
-            max-width: 380px;
-            width: 100%;
-        }
-        h1 { margin-bottom: 4px; font-size: 1.6rem; }
-        h2 { margin-top: 0; font-size: 0.95rem; color: #d4af37; font-weight: 400; }
-        p { font-size: 0.9rem; line-height: 1.5; color: #cccccc; margin: 1.5rem 0; }
-        .reproductor {
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            background: #000;
-        }
-        iframe { border: none; width: 100%; height: 352px; display: block; }
-        .firma { font-size: 0.75rem; color: #666; margin-top: 2rem; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recuerdo Digital — Sōi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      transition: background-color 0.5s ease;
+    }
+    .thumb-active {
+      border-color: var(--color-principal) !important;
+      transform: scale(1.05);
+      opacity: 1 !important;
+    }
+  </style>
 </head>
-<body>
+<body id="body-bg" class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center p-4 sm:p-6 font-sans">
 
-    <div class="tarjeta">
-        <h1 id="titulo">Cargando recuerdo...</h1>
-        <h2 id="subtitulo"></h2>
+  <!-- Estado de Carga -->
+  <div id="loader" class="flex flex-col items-center justify-center min-h-[60vh]">
+    <div id="spinner" class="w-12 h-12 border-4 border-slate-700 border-t-amber-500 rounded-full animate-spin mb-4"></div>
+    <p class="text-slate-400 text-sm font-medium">Cargando recuerdo digital...</p>
+  </div>
+
+  <!-- Contenedor Principal del Recuerdo -->
+  <main id="card-content" class="hidden w-full max-w-md bg-slate-800/90 backdrop-blur-md rounded-3xl p-6 shadow-2xl border border-slate-700/50 space-y-6 my-auto">
+    
+    <!-- Encabezado y Titular -->
+    <header class="text-center space-y-2">
+      <span id="subtitulo" class="text-xs uppercase tracking-widest font-semibold text-slate-400 block"></span>
+      <h1 id="titulo" class="text-2xl sm:text-3xl font-bold tracking-tight text-white"></h1>
+      <div id="divider" class="w-16 h-1 mx-auto rounded-full my-2"></div>
+    </header>
+
+    <!-- Galería / Foto Principal -->
+    <section id="sec-fotos" class="hidden space-y-3">
+      <div class="relative overflow-hidden rounded-2xl shadow-lg aspect-square bg-slate-950 border border-slate-700/50">
+        <img id="foto-activa" src="" alt="Recuerdo" class="w-full h-full object-cover transition-all duration-500">
+      </div>
+      <!-- Miniaturas de la Galería -->
+      <div id="carrusel-thumbs" class="flex gap-2 justify-center overflow-x-auto py-1 hidden"></div>
+    </section>
+
+    <!-- Dedicatoria y Mensaje Especial -->
+    <section id="sec-mensaje" class="hidden space-y-3 text-center bg-slate-900/60 p-4 rounded-2xl border border-slate-700/30">
+      <p id="dedicatoria" class="text-sm sm:text-base italic text-slate-200 leading-relaxed"></p>
+      <p id="mensaje-especial" class="text-xs text-slate-400 font-light"></p>
+    </section>
+
+    <!-- Audio de Voz / Mensaje Grabado -->
+    <section id="sec-audio" class="hidden space-y-2">
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+        <i id="icon-mic" class="fa-solid fa-microphone"></i> Mensaje de Voz
+      </p>
+      <audio id="reproductor-audio" controls class="w-full rounded-lg bg-slate-900"></audio>
+    </section>
+
+    <!-- Música (Spotify / Reproductor Integrado) -->
+    <section id="sec-spotify" class="hidden space-y-2">
+      <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+        <i id="icon-music" class="fa-solid fa-music"></i> Canción del Recuerdo
+      </p>
+      <div id="spotify-container" class="rounded-2xl overflow-hidden shadow-md bg-slate-950"></div>
+    </section>
+
+    <!-- Pie de Página Sōi -->
+    <footer class="pt-4 border-t border-slate-700/50 text-center">
+      <a href="https://www.soigroupcr.com" target="_blank" class="inline-flex items-center gap-2 text-xs text-slate-500 hover:text-slate-300 transition-colors">
+        <span>Conectado por</span>
+        <span class="font-bold tracking-wider text-slate-300">SŌI RECUERDOS 3D</span>
+      </a>
+    </footer>
+
+  </main>
+
+  <!-- Script de Carga y Aplicación de Colores -->
+  <script>
+    async function cargarRecuerdo() {
+      const loader = document.getElementById('loader');
+      const card = document.getElementById('card-content');
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      const recuerdoId = urlParams.get('id') || 'demo1';
+
+      try {
+        // Cargar datos sin usar memoria caché
+        const respuesta = await fetch(`./data.json?t=${Date.now()}`);
+        const datos = await respuesta.json();
+        const info = datos[recuerdoId];
+
+        if (!info) {
+          loader.innerHTML = '<p class="text-rose-400 font-medium">Recuerdo no encontrado.</p>';
+          return;
+        }
+
+        // 1. Aplicación Directa de Colores Dinámicos
+        const colorPrimary = info.colorPrincipal || '#3B82F6';
+        const colorSecondary = info.colorSecundario || '#8B5CF6';
+        const colorBg = info.colorFondo || '#0F172A';
+
+        document.documentElement.style.setProperty('--color-principal', colorPrimary);
+        document.getElementById('body-bg').style.backgroundColor = colorBg;
         
-        <div class="reproductor" id="reproductor"></div>
+        // Asignación directa de colores a elementos específicos
+        document.getElementById('divider').style.backgroundColor = colorPrimary;
+        document.getElementById('spinner').style.borderTopColor = colorPrimary;
+        document.getElementById('icon-mic').style.color = colorPrimary;
+        document.getElementById('icon-music').style.color = colorPrimary;
 
-        <p id="mensaje"></p>
+        // Borde superior de la tarjeta con degradado del cliente
+        card.style.borderTop = `4px solid ${colorPrimary}`;
 
-        <div class="firma">Diseñado por Sōi 3D</div>
-    </div>
+        // 2. Renderizar Textos
+        document.getElementById('titulo').textContent = info.titulo || '';
+        document.getElementById('subtitulo').textContent = info.subtitulo || '';
 
-    <script>
-        // Simulamos la lectura directa del registro demo1
-        const datos = {
-            titulo: "Nuestra Boda",
-            subtitulo: "Carlos & Ana — 15 Octubre 2026",
-            mensaje: "Gracias por acompañarnos. Escanea este recuerdo cada vez que quieras revivir este momento.",
-            spotify_url: "https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M"
-        };
+        if (info.dedicatoria || info.mensajeEspecial) {
+          document.getElementById('sec-mensaje').classList.remove('hidden');
+          document.getElementById('dedicatoria').textContent = info.dedicatoria ? `"${info.dedicatoria}"` : '';
+          document.getElementById('mensaje-especial').textContent = info.mensajeEspecial || '';
+        }
 
-        document.getElementById('titulo').textContent = datos.titulo;
-        document.getElementById('subtitulo').textContent = datos.subtitulo;
-        document.getElementById('mensaje').textContent = datos.mensaje;
-        document.getElementById('reproductor').innerHTML = 
-            `<iframe src="${datos.spotify_url}" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
-    </script>
+        // 3. Renderizar Fotos / Galería
+        const fotos = info.galeriaFotos || (info.fotoPrincipal ? [info.fotoPrincipal] : []);
+        if (fotos.length > 0) {
+          document.getElementById('sec-fotos').classList.remove('hidden');
+          const fotoActiva = document.getElementById('foto-activa');
+          fotoActiva.src = fotos[0];
+
+          if (fotos.length > 1) {
+            const carruselThumbs = document.getElementById('carrusel-thumbs');
+            carruselThumbs.classList.remove('hidden');
+            carruselThumbs.innerHTML = '';
+
+            fotos.forEach((url, idx) => {
+              const thumb = document.createElement('img');
+              thumb.src = url;
+              thumb.className = `w-12 h-12 object-cover rounded-lg cursor-pointer border-2 transition-all opacity-70 ${idx === 0 ? 'thumb-active' : 'border-transparent'}`;
+              thumb.onclick = () => {
+                fotoActiva.src = url;
+                document.querySelectorAll('#carrusel-thumbs img').forEach(i => {
+                  i.classList.remove('thumb-active');
+                  i.classList.add('border-transparent');
+                });
+                thumb.classList.add('thumb-active');
+                thumb.classList.remove('border-transparent');
+              };
+              carruselThumbs.appendChild(thumb);
+            });
+          }
+        }
+
+        // 4. Renderizar Audio
+        if (info.audioMensaje) {
+          document.getElementById('sec-audio').classList.remove('hidden');
+          document.getElementById('reproductor-audio').src = info.audioMensaje;
+        }
+
+        // 5. Renderizar Spotify
+        if (info.spotifyTrackId) {
+          document.getElementById('sec-spotify').classList.remove('hidden');
+          document.getElementById('spotify-container').innerHTML = `
+            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/${info.spotifyTrackId}?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          `;
+        }
+
+        // Mostrar tarjeta final
+        loader.classList.add('hidden');
+        card.classList.remove('hidden');
+
+      } catch (e) {
+        console.error(e);
+        loader.innerHTML = '<p class="text-rose-400 font-medium">Error al cargar el recuerdo.</p>';
+      }
+    }
+
+    window.onload = cargarRecuerdo;
+  </script>
 </body>
 </html>
