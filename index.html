@@ -118,22 +118,24 @@
 
         const info = docSnap.data();
 
-        // 1. Configuración de Colores
+        // 1. Colores y Contraste
         const colorPrincipal = info.colorPrincipal || '#81D4FA';
         const colorSecundario = info.colorSecundario || '#FFFFFF';
         const colorFondo = info.colorFondo || '#F0F4F8';
 
         const esClara = esColorClaro(colorSecundario);
-        
-        // Colores de texto personalizados con respaldo automático
         const colorTexto = info.colorTexto || (esClara ? '#0F172A' : '#FFFFFF');
         const colorSubtexto = info.colorSubtexto || (esClara ? '#475569' : '#E2E8F0');
 
         document.body.style.backgroundColor = colorFondo;
 
         const card = document.getElementById('card-content');
-        card.style.backgroundColor = colorSecundario;
+        if (card) {
+          card.style.backgroundColor = colorSecundario;
+          card.classList.add('border', esClara ? 'border-black/10' : 'border-white/10');
+        }
 
+        // Aplicación segura de estilos de tipografía
         const elTitulo = document.getElementById('titulo');
         const elSubtitulo = document.getElementById('subtitulo');
         const secMensaje = document.getElementById('sec-mensaje');
@@ -145,55 +147,54 @@
         const footerLogo = document.getElementById('footer-logo');
         const footerSub = document.getElementById('footer-sub');
 
-        // Aplicación directa de los colores de texto
-        elTitulo.style.color = colorTexto;
-        elDedicatoria.style.color = colorTexto;
-        footerLogo.style.color = colorTexto;
+        if (elTitulo) elTitulo.style.color = colorTexto;
+        if (elDedicatoria) elDedicatoria.style.color = colorTexto;
+        if (footerLogo) footerLogo.style.color = colorTexto;
 
-        elSubtitulo.style.color = colorSubtexto;
-        elMensajeEsp.style.color = colorSubtexto;
-        lblMusica.style.color = colorSubtexto;
-        footerLema.style.color = colorSubtexto;
-        footerSub.style.color = colorSubtexto;
+        if (elSubtitulo) elSubtitulo.style.color = colorSubtexto;
+        if (elMensajeEsp) elMensajeEsp.style.color = colorSubtexto;
+        if (lblMusica) lblMusica.style.color = colorSubtexto;
+        if (footerLema) footerLema.style.color = colorSubtexto;
+        if (footerSub) footerSub.style.color = colorSubtexto;
 
-        if (esClara) {
-          card.classList.add('border', 'border-black/10');
-          secMensaje.style.backgroundColor = 'rgba(0, 0, 0, 0.04)';
-          secMensaje.style.borderColor = 'rgba(0, 0, 0, 0.08)';
-          cardFooter.style.borderColor = 'rgba(0, 0, 0, 0.08)';
-        } else {
-          card.classList.add('border', 'border-white/10');
-          secMensaje.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
-          secMensaje.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-          cardFooter.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+        if (secMensaje) {
+          secMensaje.style.backgroundColor = esClara ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.08)';
+          secMensaje.style.borderColor = esClara ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.15)';
         }
 
-        document.getElementById('divider').style.backgroundColor = colorPrincipal;
-        document.getElementById('spinner').style.borderTopColor = colorPrincipal;
+        if (cardFooter) {
+          cardFooter.style.borderColor = esClara ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.15)';
+        }
+
+        const divider = document.getElementById('divider');
+        if (divider) divider.style.backgroundColor = colorPrincipal;
+
+        const spinner = document.getElementById('spinner');
+        if (spinner) spinner.style.borderTopColor = colorPrincipal;
 
         // 2. Textos
-        elTitulo.textContent = info.titulo || '';
-        elSubtitulo.textContent = info.subtitulo || '';
+        if (elTitulo) elTitulo.textContent = info.titulo || '';
+        if (elSubtitulo) elSubtitulo.textContent = info.subtitulo || '';
 
         // 3. Foto Principal
         const secFotos = document.getElementById('sec-fotos');
         const imgActiva = document.getElementById('foto-activa');
-        if (info.fotoPrincipal) {
+        if (info.fotoPrincipal && imgActiva) {
           imgActiva.src = info.fotoPrincipal;
-          secFotos.classList.remove('hidden');
+          secFotos?.classList.remove('hidden');
         }
 
         // 4. Mensajes
         let tieneMensaje = false;
-        if (info.dedicatoria) {
+        if (info.dedicatoria && elDedicatoria) {
           elDedicatoria.textContent = `"${info.dedicatoria}"`;
           tieneMensaje = true;
         }
-        if (info.mensajeEspecial) {
+        if (info.mensajeEspecial && elMensajeEsp) {
           elMensajeEsp.textContent = info.mensajeEspecial;
           tieneMensaje = true;
         }
-        if (tieneMensaje) {
+        if (tieneMensaje && secMensaje) {
           secMensaje.classList.remove('hidden');
         }
 
@@ -206,6 +207,63 @@
 
         if (trackRaw && spotifyContainer) {
           if (plataforma === 'mp3') {
-            lblMusica.innerHTML = '<i id="icon-music" class="fa-solid fa-volume-high"></i> Mensaje / Audio Directo';
+            if (lblMusica) lblMusica.innerHTML = '<i id="icon-music" class="fa-solid fa-volume-high"></i> Mensaje / Audio Directo';
             spotifyContainer.innerHTML = `
-              <div class="p-3 bg-black/10 rounded-2xl border border-black/
+              <div class="p-3 bg-black/10 rounded-2xl border border-black/5">
+                <audio controls class="w-full">
+                  <source src="${trackRaw}" type="audio/mpeg">
+                </audio>
+              </div>`;
+          } else if (plataforma === 'youtube' || plataforma === 'ytmusic') {
+            const ytId = extraerYoutubeId(trackRaw);
+            if (modoVisual === 'audio') {
+              if (lblMusica) lblMusica.innerHTML = '<i id="icon-music" class="fa-solid fa-headphones"></i> Audio del Recuerdo';
+              spotifyContainer.innerHTML = `
+                <div class="w-full h-20 rounded-2xl overflow-hidden shadow-sm bg-black border border-black/5">
+                  <iframe class="w-full h-full" src="https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&playsinline=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>`;
+            } else {
+              if (lblMusica) lblMusica.innerHTML = '<i id="icon-music" class="fa-solid fa-play"></i> Video del Recuerdo';
+              spotifyContainer.innerHTML = `
+                <div class="w-full aspect-video rounded-2xl overflow-hidden shadow-sm bg-black border border-black/5">
+                  <iframe class="w-full h-full" src="https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&playsinline=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>`;
+            }
+          } else {
+            if (lblMusica) lblMusica.innerHTML = '<i id="icon-music" class="fa-solid fa-music"></i> Canción del Recuerdo';
+            const cleanSpotifyId = trackRaw.includes('/track/') ? trackRaw.split('/track/')[1].split('?')[0] : trackRaw.trim();
+            const spotifyHeight = modoVisual === 'audio' ? '80' : '152';
+            spotifyContainer.innerHTML = `
+              <iframe style="border-radius:16px" src="https://open.spotify.com/embed/track/${cleanSpotifyId}?utm_source=generator&theme=0" width="100%" height="${spotifyHeight}" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+          }
+
+          if (lblMusica) lblMusica.style.color = colorSubtexto;
+          const iconMusic = document.getElementById('icon-music');
+          if (iconMusic) iconMusic.style.color = colorPrincipal;
+
+          secSpotify?.classList.remove('hidden');
+        }
+
+        // 6. Transición Definitiva: Ocultar Loader y Revelar Tarjeta
+        const loader = document.getElementById('loader');
+        if (loader) {
+          loader.style.setProperty('display', 'none', 'important');
+          loader.classList.remove('flex');
+          loader.classList.add('hidden');
+        }
+
+        if (card) {
+          card.classList.remove('hidden');
+          card.style.display = 'block';
+        }
+
+      } catch (error) {
+        console.error("Error al cargar recuerdo:", error);
+        document.body.innerHTML = `<p class="text-center text-slate-400 mt-10">Error de conexión al cargar el recuerdo: ${error.message}</p>`;
+      }
+    }
+
+    cargarRecuerdo();
+  </script>
+</body>
+</html>
