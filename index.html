@@ -76,99 +76,123 @@
 
   </main>
 
-  <!-- Script de Carga y Aplicación de Colores -->
-<!-- Importar Firebase desde CDN -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+  <!-- Script de Carga y Conexión con Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-  // 1. Configuración de Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyD20eQRuXkW3ayx5l49lvd8nJ-X7Mar-WA",
-    authDomain: "soi-nfc-db.firebaseapp.com",
-    projectId: "soi-nfc-db",
-    storageBucket: "soi-nfc-db.firebasestorage.app",
-    messagingSenderId: "421798963104",
-    appId: "1:421798963104:web:d6f0a37729d6d2eb86a6c5"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyD20eQRuXkW3ayx5l49lvd8nJ-X7Mar-WA",
+      authDomain: "soi-nfc-db.firebaseapp.com",
+      projectId: "soi-nfc-db",
+      storageBucket: "soi-nfc-db.firebasestorage.app",
+      messagingSenderId: "421798963104",
+      appId: "1:421798963104:web:d6f0a37729d6d2eb86a6c5"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-  // 2. Obtener el ID desde la URL (?id=bautizo1)
-  const urlParams = new URLSearchParams(window.location.search);
-  const recuerdoId = urlParams.get('id');
+    const urlParams = new URLSearchParams(window.location.search);
+    const recuerdoId = urlParams.get('id');
 
-  async function cargarRecuerdo() {
-    if (!recuerdoId) {
-      document.body.innerHTML = '<p class="text-center text-white mt-10">ID no especificado</p>';
-      return;
-    }
-
-    try {
-      // 3. Consultar Firestore
-      const docRef = doc(db, "recuerdos", recuerdoId);
-      const docSnap = await getDoc(docRef);
-
-      if (!docSnap.exists()) {
-        document.body.innerHTML = '<p class="text-center text-white mt-10">Recuerdo no encontrado</p>';
+    async function cargarRecuerdo() {
+      if (!recuerdoId) {
+        document.body.innerHTML = '<p class="text-center text-white mt-10">ID no especificado en la URL.</p>';
         return;
       }
 
-      const info = docSnap.data();
+      try {
+        const docRef = doc(db, "recuerdos", recuerdoId);
+        const docSnap = await getDoc(docRef);
 
-      // 4. Aplicar Colores
-      const colorPrimary = info.colorPrincipal || '#3B82F6';
-      const colorSecondary = info.colorSecundario || '#8B5CF6';
-      const colorBg = info.colorFondo || '#0F172A';
+        if (!docSnap.exists()) {
+          document.body.innerHTML = '<p class="text-center text-white mt-10">Recuerdo no encontrado en la base de datos.</p>';
+          return;
+        }
 
-      document.documentElement.style.setProperty('--color-principal', colorPrimary);
-      if (document.getElementById('body-bg')) {
-        document.getElementById('body-bg').style.backgroundColor = colorBg;
+        const info = docSnap.data();
+
+        // 1. Personalización de colores
+        const colorPrimary = info.colorPrincipal || '#81D4FA';
+        const colorSecondary = info.colorSecundario || '#FFB300';
+        const colorBg = info.colorFondo || '#0F172A';
+
+        document.documentElement.style.setProperty('--color-principal', colorPrimary);
+        if (document.getElementById('body-bg')) {
+          document.getElementById('body-bg').style.backgroundColor = colorBg;
+        }
+
+        const divider = document.getElementById('divider');
+        if (divider) divider.style.backgroundColor = colorPrimary;
+
+        const iconMic = document.getElementById('icon-mic');
+        if (iconMic) iconMic.style.color = colorPrimary;
+
+        const iconMusic = document.getElementById('icon-music');
+        if (iconMusic) iconMusic.style.color = colorPrimary;
+
+        // 2. Encabezado
+        const elTitulo = document.getElementById('titulo');
+        const elSubtitulo = document.getElementById('subtitulo');
+        if (elTitulo) elTitulo.textContent = info.titulo || '';
+        if (elSubtitulo) elSubtitulo.textContent = info.subtitulo || '';
+
+        // 3. Foto Principal
+        const secFotos = document.getElementById('sec-fotos');
+        const imgActiva = document.getElementById('foto-activa');
+        if (info.fotoPrincipal && imgActiva) {
+          imgActiva.src = info.fotoPrincipal;
+          secFotos?.classList.remove('hidden');
+        }
+
+        // 4. Mensajes y Dedicatoria
+        const secMensaje = document.getElementById('sec-mensaje');
+        const elDedicatoria = document.getElementById('dedicatoria');
+        const elMensajeEsp = document.getElementById('mensaje-especial');
+        
+        let tieneMensaje = false;
+        if (info.dedicatoria && elDedicatoria) {
+          elDedicatoria.textContent = `"${info.dedicatoria}"`;
+          tieneMensaje = true;
+        }
+        if (info.mensajeEspecial && elMensajeEsp) {
+          elMensajeEsp.textContent = info.mensajeEspecial;
+          tieneMensaje = true;
+        }
+        if (tieneMensaje && secMensaje) {
+          secMensaje.classList.remove('hidden');
+        }
+
+        // 5. Reproductor de Audio (Spotify o YouTube)
+        const trackId = info.audioId || info.spotifyTrackId;
+        const plataforma = info.plataformaAudio || 'spotify';
+        const secSpotify = document.getElementById('sec-spotify');
+        const spotifyContainer = document.getElementById('spotify-container');
+
+        if (trackId && spotifyContainer) {
+          if (plataforma === 'youtube' || plataforma === 'ytmusic') {
+            spotifyContainer.innerHTML = `<iframe class="w-full aspect-video" src="https://www.youtube-nocookie.com/embed/${trackId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+          } else {
+            spotifyContainer.innerHTML = `<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+          }
+          secSpotify?.classList.remove('hidden');
+        }
+
+        // 6. Ocultar estado de carga y revelar tarjeta completa
+        const loader = document.getElementById('loader');
+        if (loader) loader.classList.add('hidden');
+
+        const cardContent = document.getElementById('card-content');
+        if (cardContent) cardContent.classList.remove('hidden');
+
+      } catch (error) {
+        console.error("Error al cargar datos desde Firebase:", error);
+        document.body.innerHTML = '<p class="text-center text-white mt-10">Error de conexión al cargar el recuerdo.</p>';
       }
-      document.body.style.backgroundColor = colorBg;
-
-      if (document.getElementById('divider')) document.getElementById('divider').style.backgroundColor = colorPrimary;
-      if (document.getElementById('spinner')) document.getElementById('spinner').style.borderTopColor = colorPrimary;
-      if (document.getElementById('icon-mic')) document.getElementById('icon-mic').style.color = colorPrimary;
-      if (document.getElementById('icon-music')) document.getElementById('icon-music').style.color = colorPrimary;
-
-      // 5. Asignar Contenidos de Texto y Multimedia
-      if (document.getElementById('title')) document.getElementById('title').textContent = info.titulo || '';
-      if (document.getElementById('subtitle')) document.getElementById('subtitle').textContent = info.subtitulo || '';
-      if (document.getElementById('dedication')) document.getElementById('dedication').textContent = info.dedicatoria || '';
-      if (document.getElementById('special-message')) document.getElementById('special-message').textContent = info.mensajeEspecial || '';
-
-      if (document.getElementById('main-photo') && info.fotoPrincipal) {
-        document.getElementById('main-photo').src = info.fotoPrincipal;
-      }
-
-      // Reproductor de Audio (Spotify)
-      const trackId = info.audioId || info.spotifyTrackId;
-      if (trackId && document.getElementById('spotify-player')) {
-        document.getElementById('spotify-player').src = `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0`;
-      }
-
-      // 6. Ocultar pantalla de carga y revelar la tarjeta principal
-      const loadingEl = document.getElementById('loading') || document.getElementById('spinner')?.parentElement;
-      if (loadingEl) {
-        loadingEl.style.display = 'none';
-        loadingEl.classList.add('hidden');
-      }
-
-      const cardEl = document.getElementById('card') || document.getElementById('content') || document.querySelector('main');
-      if (cardEl) {
-        cardEl.classList.remove('hidden');
-        cardEl.style.display = '';
-      }
-
-    } catch (error) {
-      console.error("Error al cargar datos desde Firebase:", error);
-      document.body.innerHTML = '<p class="text-center text-white mt-10">Error de conexión al cargar el recuerdo</p>';
     }
-  }
 
-  cargarRecuerdo();
-</script>
+    cargarRecuerdo();
+  </script>
 </body>
 </html>
