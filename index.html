@@ -63,13 +63,14 @@
       <p class="text-slate-400 text-xs tracking-widest uppercase font-semibold">Sincronizando recuerdo</p>
     </div>
     
-    <!-- Fase 2: Listo para revelar (Oculto hasta que cargue la BD) -->
-    <div id="revelar-estado" class="hidden flex-col items-center justify-center anim-pulse-slow">
+    <!-- Fase 2: Listo para revelar (Opción A modificada) -->
+    <div id="revelar-estado" class="hidden flex-col items-center justify-center anim-pulse-slow text-center">
+      <span class="text-[10px] font-bold tracking-[0.3em] text-white/50 mb-4 uppercase">VIVO Memories</span>
       <div class="w-20 h-20 rounded-full bg-white/5 border border-white/20 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
         <i class="fa-solid fa-fingerprint text-3xl text-white opacity-80"></i>
       </div>
-      <h2 class="text-xl font-bold text-white tracking-widest mb-2">TOCA PARA REVELAR</h2>
-      <p class="text-slate-400 text-xs font-light tracking-wide">Tu experiencia digital está lista</p>
+      <h2 class="text-xl font-bold text-white tracking-widest mb-2 uppercase">Toca para revelar</h2>
+      <p class="text-slate-400 text-xs font-light tracking-wide">Tu recuerdo está VIVO.</p>
     </div>
     
   </div>
@@ -193,6 +194,9 @@
       
       // Ajustar colores del texto de la cortina para contraste
       const textColor = esClara ? '#1e293b' : '#ffffff';
+      const subTextColor = esClara ? 'rgba(30,41,59,0.5)' : 'rgba(255,255,255,0.5)';
+      
+      revelar.querySelector('span').style.color = subTextColor;
       revelar.querySelector('h2').style.color = textColor;
       revelar.querySelector('p').style.color = textColor;
       revelar.querySelector('i').style.color = textColor;
@@ -218,57 +222,8 @@
       const circle = document.createElement('div');
       const diameter = Math.max(contenedor.clientWidth, contenedor.clientHeight);
       const radius = diameter / 2;
-      circle.style.width = circle.style.height = `${diameter}px`;
-      circle.style.left = `${e.clientX - radius}px`;
-      circle.style.top = `${e.clientY - radius}px`;
-      circle.classList.add('ripple');
-      contenedor.appendChild(circle);
-    }
-
-    // 4. Construir la tarjeta y forzar el Autoplay
-    function abrirRecuerdo() {
-      const info = configuracionGlobal;
-      const cortina = document.getElementById('cortina-vivo');
-      const card = document.getElementById('card-content');
-      
-      // --- A. CONSTRUCCIÓN VISUAL ---
-      const colorPrincipal = info.colorPrincipal || '#81D4FA';
-      const colorSecundario = info.colorSecundario || '#FFFFFF';
-      const colorFondo = info.colorFondo || '#F0F4F8';
-      const esClara = esColorClaro(colorSecundario);
-      const colorTexto = info.colorTexto || (esClara ? '#0F172A' : '#FFFFFF');
-      const colorSubtexto = info.colorSubtexto || (esClara ? '#475569' : '#E2E8F0');
-
-      document.body.style.backgroundColor = colorFondo;
-      card.style.backgroundColor = colorSecundario;
-      card.classList.add('border', esClara ? 'border-black/10' : 'border-white/10');
-
-      const elTitulo = document.getElementById('titulo');
-      const elSubtitulo = document.getElementById('subtitulo');
-      const secMensaje = document.getElementById('sec-mensaje');
-      const elDedicatoria = document.getElementById('dedicatoria');
-      const lblMusica = document.getElementById('lbl-musica');
-      const footerLogo = document.getElementById('footer-logo');
-
-      if (elTitulo) elTitulo.style.color = colorTexto;
-      if (elDedicatoria) elDedicatoria.style.color = colorTexto;
-      if (footerLogo) footerLogo.style.color = colorTexto;
-      if (elSubtitulo) elSubtitulo.style.color = colorSubtexto;
-      if (lblMusica) lblMusica.style.color = colorSubtexto;
-
-      if (secMensaje) {
-        secMensaje.style.backgroundColor = esClara ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.08)';
-        secMensaje.style.borderColor = esClara ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.15)';
-      }
-      
-      document.getElementById('card-footer').style.borderColor = esClara ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.15)';
-      document.getElementById('divider').style.backgroundColor = colorPrincipal;
-
-      // Textos y Foto
-      if (elTitulo) elTitulo.textContent = info.titulo || '';
-      if (elSubtitulo) elSubtitulo.textContent = info.subtitulo || '';
-      if (info.dedicatoria) {
-        elDedicatoria.textContent = `"${info.dedicatoria}"`;
+      circle.style.width = circle.style.height = `${diameter}px`; circle.style.left = `${e.clientX - radius}px`;
+      circle.style.top = `${e.clientY - radius}px`; circle.classList.add('ripple'); contenedor.appendChild(circle); }  // 4. Construir la tarjeta y forzar el Autoplay function abrirRecuerdo() { const info = configuracionGlobal; const cortina = document.getElementById('cortina-vivo'); const card = document.getElementById('card-content');  // --- A. CONSTRUCCIÓN VISUAL --- const colorPrincipal = info.colorPrincipal \vert{}\vert{} '#81D4FA'; const colorSecundario = info.colorSecundario \vert{}\vert{} '#FFFFFF'; const colorFondo = info.colorFondo \vert{}\vert{} '#F0F4F8'; const esClara = esColorClaro(colorSecundario); const colorTexto = info.colorTexto \vert{}\vert{} (esClara ? '#0F172A' : '#FFFFFF'); const colorSubtexto = info.colorSubtexto \vert{}\vert{} (esClara ? '#475569' : '#E2E8F0');  document.body.style.backgroundColor = colorFondo; card.style.backgroundColor = colorSecundario; card.classList.add('border', esClara ? 'border-black/10' : 'border-white/10');  const elTitulo = document.getElementById('titulo'); const elSubtitulo = document.getElementById('subtitulo'); const secMensaje = document.getElementById('sec-mensaje'); const elDedicatoria = document.getElementById('dedicatoria'); const lblMusica = document.getElementById('lbl-musica'); const footerLogo = document.getElementById('footer-logo');  if (elTitulo) elTitulo.style.color = colorTexto; if (elDedicatoria) elDedicatoria.style.color = colorTexto; if (footerLogo) footerLogo.style.color = colorTexto; if (elSubtitulo) elSubtitulo.style.color = colorSubtexto; if (lblMusica) lblMusica.style.color = colorSubtexto;  if (secMensaje) { secMensaje.style.backgroundColor = esClara ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.08)'; secMensaje.style.borderColor = esClara ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.15)'; }  document.getElementById('card-footer').style.borderColor = esClara ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.15)'; document.getElementById('divider').style.backgroundColor = colorPrincipal;  // Textos y Foto if (elTitulo) elTitulo.textContent = info.titulo \vert{}\vert{} ''; if (elSubtitulo) elSubtitulo.textContent = info.subtitulo \vert{}\vert{} ''; if (info.dedicatoria) { elDedicatoria.textContent = `"${info.dedicatoria}"`;
         secMensaje.classList.remove('hidden');
       }
 
@@ -300,35 +255,4 @@
           const isAudioBar = modoVisual === 'audio';
           // Se incluye ?autoplay=1
           spotifyContainer.innerHTML = `
-            <div class="w-full ${isAudioBar ? 'h-20' : 'aspect-video'} rounded-2xl overflow-hidden bg-black">
-              <iframe class="w-full h-full" src="https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&playsinline=1&rel=0" allow="autoplay; encrypted-media"></iframe>
-            </div>`;
-        } else {
-          // Spotify no permite autoplay estricto sin inicio de sesión en web, pero lo cargamos normal
-          const cleanSpotifyId = trackRaw.includes('/track/') ? trackRaw.split('/track/')[1].split('?')[0] : trackRaw.trim();
-          spotifyContainer.innerHTML = `
-            <iframe style="border-radius:16px" src="https://open.spotify.com/embed/track/${cleanSpotifyId}?utm_source=generator&theme=0" width="100%" height="${modoVisual === 'audio' ? '80' : '152'}" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media"></iframe>`;
-        }
-        document.getElementById('icon-music').style.color = colorPrincipal;
-        document.getElementById('sec-spotify').classList.remove('hidden');
-      }
-
-      // --- C. REVELACIÓN FLUIDA ---
-      // Desvanecer cortina
-      cortina.style.opacity = '0';
-      document.body.style.overflow = 'auto'; // Permitir scroll nuevamente
-      
-      // Mostrar tarjeta suavemente
-      setTimeout(() => {
-        cortina.style.display = 'none';
-        card.style.opacity = '1';
-        card.style.transform = 'translateY(0) scale(1)';
-      }, 500); // 500ms es el tiempo que tarda la cortina en desaparecer
-    }
-
-    // Iniciar el proceso de carga apenas cargue el script
-    precargarDatos();
-
-  </script>
-</body>
-</html>
+            <div class="w-full ${isAudioBar ? 'h-20' :
