@@ -8,23 +8,74 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <style>
     body {
-      transition: background-color 0.4s ease;
+      transition: background-color 0.8s ease;
     }
     #card-content {
-      transition: background-color 0.4s ease, color 0.4s ease;
+      transition: background-color 0.8s ease, color 0.4s ease, opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity: 0;
+      transform: translateY(20px) scale(0.98);
+    }
+    
+    /* La Cortina de Revelación */
+    #cortina-vivo {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #0f172a; /* Slate 900 base */
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+      cursor: pointer;
+    }
+    
+    .anim-pulse-slow {
+      animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    
+    /* Efecto de anillo expansivo al tocar */
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: scale(0);
+      animation: rippleEffect 0.6s linear;
+      pointer-events: none;
+    }
+    
+    @keyframes rippleEffect {
+      to { transform: scale(4); opacity: 0; }
     }
   </style>
 </head>
-<body id="body-bg" class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 font-sans">
+<body id="body-bg" class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4 sm:p-6 font-sans overflow-hidden">
 
-  <!-- Estado de Carga -->
-  <div id="loader" class="flex flex-col items-center justify-center min-h-[60vh]">
-    <div id="spinner" class="w-12 h-12 border-4 border-slate-300 border-t-sky-400 rounded-full animate-spin mb-4"></div>
-    <p class="text-slate-500 text-sm font-medium">Cargando experiencia digital...</p>
+  <!-- CORTINA VIVO (Pantalla inicial interactiva) -->
+  <div id="cortina-vivo">
+    
+    <!-- Fase 1: Cargando (Spinner oculto por defecto, visible si tarda) -->
+    <div id="loader-estado" class="flex flex-col items-center justify-center opacity-100 transition-opacity duration-300">
+      <div id="spinner-color" class="w-10 h-10 border-2 border-slate-700 border-t-white rounded-full animate-spin mb-4"></div>
+      <p class="text-slate-400 text-xs tracking-widest uppercase font-semibold">Sincronizando recuerdo</p>
+    </div>
+    
+    <!-- Fase 2: Listo para revelar (Oculto hasta que cargue la BD) -->
+    <div id="revelar-estado" class="hidden flex-col items-center justify-center anim-pulse-slow">
+      <div class="w-20 h-20 rounded-full bg-white/5 border border-white/20 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+        <i class="fa-solid fa-fingerprint text-3xl text-white opacity-80"></i>
+      </div>
+      <h2 class="text-xl font-bold text-white tracking-widest mb-2">TOCA PARA REVELAR</h2>
+      <p class="text-slate-400 text-xs font-light tracking-wide">Tu experiencia digital está lista</p>
+    </div>
+    
   </div>
 
   <!-- Contenedor Principal (Tarjeta Flotante VIVO) -->
-  <main id="card-content" class="hidden w-full max-w-md rounded-3xl p-6 sm:p-7 shadow-2xl space-y-6 my-auto transition-all">
+  <main id="card-content" class="w-full max-w-md rounded-3xl p-6 sm:p-7 shadow-2xl space-y-6 my-auto">
     
     <!-- Encabezado y Titular -->
     <header class="text-center space-y-1.5">
@@ -38,7 +89,6 @@
       <div class="relative overflow-hidden rounded-2xl shadow-md aspect-square bg-slate-100 border border-black/5">
         <img id="foto-activa" src="" alt="Recuerdo" class="w-full h-full object-cover transition-all duration-500">
       </div>
-      <div id="carrusel-thumbs" class="flex gap-2 justify-center overflow-x-auto py-1 hidden"></div>
     </section>
 
     <!-- Dedicatoria y Mensaje Especial -->
@@ -50,7 +100,7 @@
     <!-- Música / Audio / Video Integrado -->
     <section id="sec-spotify" class="hidden space-y-2">
       <p id="lbl-musica" class="text-xs font-semibold uppercase tracking-wider flex items-center gap-2">
-        <i id="icon-music" class="fa-solid fa-music"></i> Canción del Recuerdo
+        <i id="icon-music" class="fa-solid fa-music"></i> Audio del Recuerdo
       </p>
       <div id="spotify-container" class="rounded-2xl overflow-hidden shadow-sm"></div>
     </section>
@@ -85,6 +135,10 @@
     const urlParams = new URLSearchParams(window.location.search);
     const recuerdoId = urlParams.get('id');
 
+    // Variables globales para la carga
+    let datosCargados = false;
+    let configuracionGlobal = {};
+
     function esColorClaro(hex) {
       if (!hex) return false;
       const cleanHex = hex.replace('#', '');
@@ -101,173 +155,180 @@
       return (match && match[2].length === 11) ? match[2] : url.trim();
     }
 
-    async function cargarRecuerdo() {
+    // 1. Iniciar la extracción de datos desde Firebase
+    async function precargarDatos() {
       if (!recuerdoId) {
-        document.body.innerHTML = '<p class="text-center text-slate-400 mt-10">ID no especificado en la URL.</p>';
+        document.getElementById('loader-estado').innerHTML = '<p class="text-red-400">Error: ID no especificado en el chip NFC.</p>';
         return;
       }
-
       try {
         const docRef = doc(db, "recuerdos", recuerdoId);
         const docSnap = await getDoc(docRef);
 
         if (!docSnap.exists()) {
-          document.body.innerHTML = '<p class="text-center text-slate-400 mt-10">Recuerdo no encontrado en la base de datos.</p>';
+          document.getElementById('loader-estado').innerHTML = '<p class="text-red-400">El recuerdo no fue encontrado.</p>';
           return;
         }
 
-        const info = docSnap.data();
-
-        // 1. Colores y Contraste
-        const colorPrincipal = info.colorPrincipal || '#81D4FA';
-        const colorSecundario = info.colorSecundario || '#FFFFFF';
-        const colorFondo = info.colorFondo || '#F0F4F8';
-
-        const esClara = esColorClaro(colorSecundario);
-        const colorTexto = info.colorTexto || (esClara ? '#0F172A' : '#FFFFFF');
-        const colorSubtexto = info.colorSubtexto || (esClara ? '#475569' : '#E2E8F0');
-
-        document.body.style.backgroundColor = colorFondo;
-
-        const card = document.getElementById('card-content');
-        if (card) {
-          card.style.backgroundColor = colorSecundario;
-          card.classList.add('border', esClara ? 'border-black/10' : 'border-white/10');
-        }
-
-        // Aplicación segura de estilos de tipografía
-        const elTitulo = document.getElementById('titulo');
-        const elSubtitulo = document.getElementById('subtitulo');
-        const secMensaje = document.getElementById('sec-mensaje');
-        const elDedicatoria = document.getElementById('dedicatoria');
-        const elMensajeEsp = document.getElementById('mensaje-especial');
-        const lblMusica = document.getElementById('lbl-musica');
-        const cardFooter = document.getElementById('card-footer');
-        const footerLema = document.getElementById('footer-lema');
-        const footerLogo = document.getElementById('footer-logo');
-        const footerSub = document.getElementById('footer-sub');
-
-        if (elTitulo) elTitulo.style.color = colorTexto;
-        if (elDedicatoria) elDedicatoria.style.color = colorTexto;
-        if (footerLogo) footerLogo.style.color = colorTexto;
-
-        if (elSubtitulo) elSubtitulo.style.color = colorSubtexto;
-        if (elMensajeEsp) elMensajeEsp.style.color = colorSubtexto;
-        if (lblMusica) lblMusica.style.color = colorSubtexto;
-        if (footerLema) footerLema.style.color = colorSubtexto;
-        if (footerSub) footerSub.style.color = colorSubtexto;
-
-        if (secMensaje) {
-          secMensaje.style.backgroundColor = esClara ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.08)';
-          secMensaje.style.borderColor = esClara ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.15)';
-        }
-
-        if (cardFooter) {
-          cardFooter.style.borderColor = esClara ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.15)';
-        }
-
-        const divider = document.getElementById('divider');
-        if (divider) divider.style.backgroundColor = colorPrincipal;
-
-        const spinner = document.getElementById('spinner');
-        if (spinner) spinner.style.borderTopColor = colorPrincipal;
-
-        // 2. Textos
-        if (elTitulo) elTitulo.textContent = info.titulo || '';
-        if (elSubtitulo) elSubtitulo.textContent = info.subtitulo || '';
-
-        // 3. Foto Principal
-        const secFotos = document.getElementById('sec-fotos');
-        const imgActiva = document.getElementById('foto-activa');
-        if (info.fotoPrincipal && imgActiva) {
-          imgActiva.src = info.fotoPrincipal;
-          secFotos?.classList.remove('hidden');
-        }
-
-        // 4. Mensajes
-        let tieneMensaje = false;
-        if (info.dedicatoria && elDedicatoria) {
-          elDedicatoria.textContent = `"${info.dedicatoria}"`;
-          tieneMensaje = true;
-        }
-        if (info.mensajeEspecial && elMensajeEsp) {
-          elMensajeEsp.textContent = info.mensajeEspecial;
-          tieneMensaje = true;
-        }
-        if (tieneMensaje && secMensaje) {
-          secMensaje.classList.remove('hidden');
-        }
-
-        // 5. Audio / Video y Manejo de Nubes
-        const trackRaw = info.audioId || info.spotifyTrackId;
-        const plataforma = info.plataformaAudio || 'spotify';
-        const modoVisual = info.modoReproductor || (plataforma === 'youtube' ? 'video' : 'audio');
-        const secSpotify = document.getElementById('sec-spotify');
-        const spotifyContainer = document.getElementById('spotify-container');
-
-        if (trackRaw && spotifyContainer) {
-          if (plataforma === 'mp3' || plataforma === 'dropbox') {
-            // Reproductor Nativo Elegante (Dropbox / MP3 Directo)
-            if (lblMusica) lblMusica.innerHTML = '<i id="icon-music" class="fa-solid fa-volume-high"></i> Mensaje de Voz';
-            spotifyContainer.innerHTML = `
-              <div class="p-3 bg-black/10 rounded-2xl border border-black/5">
-                <audio controls class="w-full">
-                  <source src="${trackRaw}" type="audio/mpeg">
-                </audio>
-              </div>`;
-              
-          } else if (plataforma === 'drive') {
-            // Plan de Contingencia: Visor de Google Drive (Iframe Nativo)
-            if (lblMusica) lblMusica.innerHTML = '<i id="icon-music" class="fa-brands fa-google-drive"></i> Audio en Drive';
-            spotifyContainer.innerHTML = `
-              <div class="w-full aspect-video rounded-2xl overflow-hidden shadow-sm bg-black border border-black/5">
-                <iframe class="w-full h-full" src="${trackRaw}" frameborder="0" allow="autoplay" allowfullscreen></iframe>
-              </div>`;
-              
-          } else if (plataforma === 'youtube' || plataforma === 'ytmusic') {
-            const ytId = extraerYoutubeId(trackRaw);
-            const isAudioBar = modoVisual === 'audio';
-            if (lblMusica) lblMusica.innerHTML = `<i id="icon-music" class="fa-solid ${isAudioBar ? 'fa-headphones' : 'fa-play'}"></i> ${isAudioBar ? 'Audio' : 'Video'} del Recuerdo`;
-            spotifyContainer.innerHTML = `
-              <div class="w-full ${isAudioBar ? 'h-20' : 'aspect-video'} rounded-2xl overflow-hidden shadow-sm bg-black border border-black/5">
-                <iframe class="w-full h-full" src="https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&playsinline=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-              </div>`;
-              
-          } else {
-            // Spotify
-            if (lblMusica) lblMusica.innerHTML = '<i id="icon-music" class="fa-brands fa-spotify"></i> Canción del Recuerdo';
-            const cleanSpotifyId = trackRaw.includes('/track/') ? trackRaw.split('/track/')[1].split('?')[0] : trackRaw.trim();
-            spotifyContainer.innerHTML = `
-              <iframe style="border-radius:16px" src="https://open.spotify.com/embed/track/${cleanSpotifyId}?utm_source=generator&theme=0" width="100%" height="${modoVisual === 'audio' ? '80' : '152'}" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
-          }
-
-          if (lblMusica) lblMusica.style.color = colorSubtexto;
-          const iconMusic = document.getElementById('icon-music');
-          if (iconMusic) iconMusic.style.color = colorPrincipal;
-
-          secSpotify?.classList.remove('hidden');
-        }
-
-        // 6. Transición Definitiva: Ocultar Loader y Revelar Tarjeta
-        const loader = document.getElementById('loader');
-        if (loader) {
-          loader.style.setProperty('display', 'none', 'important');
-          loader.classList.remove('flex');
-          loader.classList.add('hidden');
-        }
-
-        if (card) {
-          card.classList.remove('hidden');
-          card.style.display = 'block';
-        }
+        configuracionGlobal = docSnap.data();
+        datosCargados = true;
+        prepararCortina(configuracionGlobal);
 
       } catch (error) {
-        console.error("Error al cargar recuerdo:", error);
-        document.body.innerHTML = `<p class="text-center text-slate-400 mt-10">Error de conexión al cargar el recuerdo: ${error.message}</p>`;
+        document.getElementById('loader-estado').innerHTML = `<p class="text-red-400 text-xs text-center max-w-[80%]">Error de conexión.</p>`;
       }
     }
 
-    cargarRecuerdo();
+    // 2. Transición del Loader a la Huella Dactilar
+    function prepararCortina(info) {
+      const cortina = document.getElementById('cortina-vivo');
+      
+      // Aplicar color de fondo suave a la cortina según la paleta elegida
+      const colorBase = info.colorFondo || '#F0F4F8';
+      const esClara = esColorClaro(colorBase);
+      cortina.style.backgroundColor = colorBase;
+      
+      const loader = document.getElementById('loader-estado');
+      const revelar = document.getElementById('revelar-estado');
+      
+      // Ajustar colores del texto de la cortina para contraste
+      const textColor = esClara ? '#1e293b' : '#ffffff';
+      revelar.querySelector('h2').style.color = textColor;
+      revelar.querySelector('p').style.color = textColor;
+      revelar.querySelector('i').style.color = textColor;
+      revelar.querySelector('.w-20').style.borderColor = esClara ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.2)';
+      revelar.querySelector('.w-20').style.backgroundColor = esClara ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.05)';
+
+      // Ocultar Loader y Mostrar la huella
+      loader.classList.add('opacity-0');
+      setTimeout(() => {
+        loader.classList.add('hidden');
+        revelar.classList.remove('hidden');
+        revelar.classList.add('flex');
+      }, 300);
+
+      // 3. Activar el Evento de Clic en la cortina
+      cortina.addEventListener('click', function(e) {
+        crearEfectoRipple(e, cortina);
+        abrirRecuerdo();
+      });
+    }
+
+    function crearEfectoRipple(e, contenedor) {
+      const circle = document.createElement('div');
+      const diameter = Math.max(contenedor.clientWidth, contenedor.clientHeight);
+      const radius = diameter / 2;
+      circle.style.width = circle.style.height = `${diameter}px`;
+      circle.style.left = `${e.clientX - radius}px`;
+      circle.style.top = `${e.clientY - radius}px`;
+      circle.classList.add('ripple');
+      contenedor.appendChild(circle);
+    }
+
+    // 4. Construir la tarjeta y forzar el Autoplay
+    function abrirRecuerdo() {
+      const info = configuracionGlobal;
+      const cortina = document.getElementById('cortina-vivo');
+      const card = document.getElementById('card-content');
+      
+      // --- A. CONSTRUCCIÓN VISUAL ---
+      const colorPrincipal = info.colorPrincipal || '#81D4FA';
+      const colorSecundario = info.colorSecundario || '#FFFFFF';
+      const colorFondo = info.colorFondo || '#F0F4F8';
+      const esClara = esColorClaro(colorSecundario);
+      const colorTexto = info.colorTexto || (esClara ? '#0F172A' : '#FFFFFF');
+      const colorSubtexto = info.colorSubtexto || (esClara ? '#475569' : '#E2E8F0');
+
+      document.body.style.backgroundColor = colorFondo;
+      card.style.backgroundColor = colorSecundario;
+      card.classList.add('border', esClara ? 'border-black/10' : 'border-white/10');
+
+      const elTitulo = document.getElementById('titulo');
+      const elSubtitulo = document.getElementById('subtitulo');
+      const secMensaje = document.getElementById('sec-mensaje');
+      const elDedicatoria = document.getElementById('dedicatoria');
+      const lblMusica = document.getElementById('lbl-musica');
+      const footerLogo = document.getElementById('footer-logo');
+
+      if (elTitulo) elTitulo.style.color = colorTexto;
+      if (elDedicatoria) elDedicatoria.style.color = colorTexto;
+      if (footerLogo) footerLogo.style.color = colorTexto;
+      if (elSubtitulo) elSubtitulo.style.color = colorSubtexto;
+      if (lblMusica) lblMusica.style.color = colorSubtexto;
+
+      if (secMensaje) {
+        secMensaje.style.backgroundColor = esClara ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.08)';
+        secMensaje.style.borderColor = esClara ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.15)';
+      }
+      
+      document.getElementById('card-footer').style.borderColor = esClara ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.15)';
+      document.getElementById('divider').style.backgroundColor = colorPrincipal;
+
+      // Textos y Foto
+      if (elTitulo) elTitulo.textContent = info.titulo || '';
+      if (elSubtitulo) elSubtitulo.textContent = info.subtitulo || '';
+      if (info.dedicatoria) {
+        elDedicatoria.textContent = `"${info.dedicatoria}"`;
+        secMensaje.classList.remove('hidden');
+      }
+
+      if (info.fotoPrincipal) {
+        document.getElementById('foto-activa').src = info.fotoPrincipal;
+        document.getElementById('sec-fotos').classList.remove('hidden');
+      }
+
+      // --- B. REPRODUCTOR Y AUTOPLAY ---
+      const trackRaw = info.audioId || info.spotifyTrackId;
+      const plataforma = info.plataformaAudio || 'spotify';
+      const modoVisual = info.modoReproductor || 'audio';
+      const spotifyContainer = document.getElementById('spotify-container');
+
+      if (trackRaw && spotifyContainer) {
+        if (plataforma === 'mp3' || plataforma === 'dropbox') {
+          // El atributo 'autoplay' ahora sí funcionará porque estamos dentro de un evento de clic
+          spotifyContainer.innerHTML = `
+            <div class="p-3 bg-black/10 rounded-2xl border border-black/5">
+              <audio id="audio-nativo" controls autoplay class="w-full">
+                <source src="${trackRaw}" type="audio/mpeg">
+              </audio>
+            </div>`;
+            // Forzar play manual por si acaso
+            setTimeout(() => { document.getElementById('audio-nativo')?.play().catch(e=>console.log("Autoplay mitigado por OS")); }, 100);
+
+        } else if (plataforma === 'youtube' || plataforma === 'ytmusic') {
+          const ytId = extraerYoutubeId(trackRaw);
+          const isAudioBar = modoVisual === 'audio';
+          // Se incluye ?autoplay=1
+          spotifyContainer.innerHTML = `
+            <div class="w-full ${isAudioBar ? 'h-20' : 'aspect-video'} rounded-2xl overflow-hidden bg-black">
+              <iframe class="w-full h-full" src="https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&playsinline=1&rel=0" allow="autoplay; encrypted-media"></iframe>
+            </div>`;
+        } else {
+          // Spotify no permite autoplay estricto sin inicio de sesión en web, pero lo cargamos normal
+          const cleanSpotifyId = trackRaw.includes('/track/') ? trackRaw.split('/track/')[1].split('?')[0] : trackRaw.trim();
+          spotifyContainer.innerHTML = `
+            <iframe style="border-radius:16px" src="https://open.spotify.com/embed/track/${cleanSpotifyId}?utm_source=generator&theme=0" width="100%" height="${modoVisual === 'audio' ? '80' : '152'}" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media"></iframe>`;
+        }
+        document.getElementById('icon-music').style.color = colorPrincipal;
+        document.getElementById('sec-spotify').classList.remove('hidden');
+      }
+
+      // --- C. REVELACIÓN FLUIDA ---
+      // Desvanecer cortina
+      cortina.style.opacity = '0';
+      document.body.style.overflow = 'auto'; // Permitir scroll nuevamente
+      
+      // Mostrar tarjeta suavemente
+      setTimeout(() => {
+        cortina.style.display = 'none';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0) scale(1)';
+      }, 500); // 500ms es el tiempo que tarda la cortina en desaparecer
+    }
+
+    // Iniciar el proceso de carga apenas cargue el script
+    precargarDatos();
+
   </script>
 </body>
 </html>
