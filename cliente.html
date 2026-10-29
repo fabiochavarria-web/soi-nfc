@@ -5,131 +5,79 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VIVO | Personaliza tu Recuerdo</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts Preseleccionadas -->
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Dancing+Script:wght@600&family=Lato:wght@300;400&family=Lora:ital@0;1&family=Montserrat:wght@300;500&family=Open+Sans:wght@300;400&family=Oswald:wght@400;500&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
 </head>
 <body class="bg-[#F0F4F8] min-h-screen font-sans text-slate-800">
-
   <div class="max-w-2xl mx-auto bg-white min-h-screen shadow-xl sm:my-8 sm:rounded-2xl overflow-hidden">
-    
-    <!-- Header VIVO -->
     <div class="bg-slate-900 px-6 py-10 text-center text-white relative">
       <h1 class="text-3xl font-black tracking-[0.25em] mb-2">V I V O</h1>
       <p class="text-xs text-slate-300 uppercase tracking-widest font-semibold">Portal de Personalización</p>
     </div>
 
     <div class="p-6 sm:p-10">
-      <p class="text-sm text-slate-600 mb-8 text-center leading-relaxed">
-        Estás a un paso de materializar tu recuerdo. Completa los detalles a continuación para diseñar tu experiencia digital. Nuestro equipo revisará la información antes de grabar el chip.
-      </p>
-
       <form id="formCliente" class="space-y-8">
         
-        <!-- Datos de Contacto -->
+        <!-- Contacto -->
         <div class="space-y-4">
           <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400 border-b pb-2">Tus Datos</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Nombre Completo</label>
-              <input type="text" id="nombreCliente" required class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 bg-slate-50 text-sm">
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Correo (Para confirmación)</label>
-              <input type="email" id="emailCliente" required class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 bg-slate-50 text-sm">
-            </div>
+            <div><label class="block text-xs font-bold text-slate-700 mb-1">Nombre Completo</label><input type="text" id="nombreCliente" required class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 bg-slate-50 text-sm"></div>
+            <div><label class="block text-xs font-bold text-slate-700 mb-1">Correo Electrónico</label><input type="email" id="emailCliente" required class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 bg-slate-50 text-sm"></div>
           </div>
         </div>
 
-        <!-- Contenido del Recuerdo -->
+        <!-- Textos -->
         <div class="space-y-4">
-          <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400 border-b pb-2">Textos del Recuerdo</h2>
+          <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400 border-b pb-2">Textos</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Título Principal</label>
-              <input type="text" id="titulo" required placeholder="Ej: Boda de Laura y Andrés" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 bg-slate-50 text-sm">
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Subtítulo o Fecha</label>
-              <input type="text" id="subtitulo" placeholder="Ej: 24 de Agosto, 2026" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 bg-slate-50 text-sm">
-            </div>
+            <div><label class="block text-xs font-bold text-slate-700 mb-1">Título</label><input type="text" id="titulo" required class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 bg-slate-50 text-sm"></div>
+            <div><label class="block text-xs font-bold text-slate-700 mb-1">Subtítulo / Fecha</label><input type="text" id="subtitulo" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 bg-slate-50 text-sm"></div>
           </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Dedicatoria</label>
-            <textarea id="dedicatoria" required rows="3" placeholder="Escribe el mensaje que aparecerá en la pantalla..." class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 bg-slate-50 text-sm"></textarea>
-          </div>
+          <div><label class="block text-xs font-bold text-slate-700 mb-1">Dedicatoria</label><textarea id="dedicatoria" required rows="3" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 bg-slate-50 text-sm"></textarea></div>
         </div>
 
-        <!-- Enlaces Multimedia -->
+        <!-- Multimedia Mejorada -->
         <div class="space-y-4">
-          <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400 border-b pb-2">Multimedia</h2>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Enlace de la Foto (Google Drive o Dropbox)</label>
-            <input type="url" id="fotoPrincipal" required placeholder="Pega el link de compartir..." class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 bg-slate-50 text-sm">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400 border-b pb-2">Archivos (Links)</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="md:col-span-1"><label class="block text-xs font-bold text-slate-700 mb-1">Tipo de Foto</label><select id="origenFoto" class="w-full p-3 border rounded-lg bg-white text-sm"><option value="dropbox">Dropbox</option><option value="drive">Google Drive</option></select></div>
+            <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-700 mb-1">Enlace de la Foto</label><input type="url" id="fotoPrincipal" required class="w-full p-3 border border-slate-300 rounded-lg text-sm"></div>
           </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Canción / Audio (Link de Spotify, YouTube o Dropbox)</label>
-            <input type="text" id="audioId" placeholder="Pega el link de la canción..." class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 bg-slate-50 text-sm">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="md:col-span-1"><label class="block text-xs font-bold text-slate-700 mb-1">Tipo de Audio/Música</label><select id="plataformaAudio" class="w-full p-3 border rounded-lg bg-white text-sm"><option value="spotify">Spotify</option><option value="dropbox">Audio Dropbox (.mp3)</option><option value="drive">Audio Google Drive</option><option value="youtube">YouTube</option></select></div>
+            <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-700 mb-1">Enlace de la Canción</label><input type="text" id="audioId" class="w-full p-3 border border-slate-300 rounded-lg text-sm"></div>
           </div>
         </div>
 
-        <!-- Diseño y Estética -->
+        <!-- Diseño y Estética (NUEVO) -->
         <div class="space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
-          <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 border-b border-slate-300 pb-2">Personalización Visual</h2>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-            <!-- Selector de Tipografías -->
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Estilo de Letra (Título)</label>
-              <select id="fontTitulo" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm bg-white">
-                <option value="Playfair Display" style="font-family: 'Playfair Display'">Playfair Display (Clásica y Elegante)</option>
-                <option value="Montserrat" style="font-family: 'Montserrat'">Montserrat (Moderna y Limpia)</option>
-                <option value="Dancing Script" style="font-family: 'Dancing Script'">Dancing Script (Cursiva Romántica)</option>
-                <option value="Cinzel" style="font-family: 'Cinzel'">Cinzel (Estilo Cine/Premium)</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Estilo de Letra (Textos)</label>
-              <select id="fontTexto" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm bg-white">
-                <option value="Lato" style="font-family: 'Lato'">Lato (Amigable y Legible)</option>
-                <option value="Cormorant Garamond" style="font-family: 'Cormorant Garamond'">Cormorant Garamond (Libro/Formal)</option>
-                <option value="Quicksand" style="font-family: 'Quicksand'">Quicksand (Redondeada y Suave)</option>
-                <option value="Open Sans" style="font-family: 'Open Sans'">Open Sans (Neutra)</option>
-              </select>
-            </div>
+          <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 border-b border-slate-300 pb-2">Diseño y Colores</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div><label class="block text-xs font-bold text-slate-700 mb-1">Letra Título</label><select id="fontTitulo" class="w-full p-2 border rounded bg-white text-sm"><option value="Playfair Display">Playfair Display</option><option value="Dancing Script">Dancing Script (Cursiva)</option><option value="Cinzel">Cinzel</option></select></div>
+            <div><label class="block text-xs font-bold text-slate-700 mb-1">Letra Textos</label><select id="fontTexto" class="w-full p-2 border rounded bg-white text-sm"><option value="Lato">Lato</option><option value="Cormorant Garamond">Cormorant Garamond</option></select></div>
+          </div>
+          <div class="grid grid-cols-3 gap-4 pt-2">
+            <div><label class="block text-[10px] font-bold text-slate-700 mb-1 text-center">Fondo</label><input type="color" id="colorFondo" value="#FFFFFF" class="w-full h-10 cursor-pointer border rounded"></div>
+            <div><label class="block text-[10px] font-bold text-slate-700 mb-1 text-center">Acentos (Botón)</label><input type="color" id="colorPrincipal" value="#81D4FA" class="w-full h-10 cursor-pointer border rounded"></div>
+            <div><label class="block text-[10px] font-bold text-slate-700 mb-1 text-center">Color Textos</label><input type="color" id="colorTexto" value="#1E293B" class="w-full h-10 cursor-pointer border rounded"></div>
           </div>
         </div>
 
-        <!-- Acuerdo Legal Obligatorio -->
+        <!-- Legal -->
         <div class="bg-blue-50/50 border border-blue-100 p-5 rounded-xl space-y-3">
-          <h3 class="text-xs font-bold text-blue-900 uppercase">Términos de Personalización y Propiedad Intelectual</h3>
-          <div class="text-[11px] text-slate-600 space-y-2 h-32 overflow-y-auto pr-2 custom-scrollbar">
-            <p>Al enviar información, enlaces o archivos multimedia para la creación de la experiencia digital VIVO, usted, como Cliente, acepta y declara lo siguiente:</p>
-            <p><strong>1. Derechos de Autor:</strong> El Cliente declara poseer los derechos de autor o el consentimiento explícito para el uso de las fotografías, dedicatorias y enlaces a obras musicales proporcionados.</p>
-            <p><strong>2. Exención de Responsabilidad:</strong> El Cliente asume la responsabilidad total frente a cualquier reclamación de terceros. Sōi Group actúa únicamente como facilitador tecnológico, quedando eximido de responsabilidad por infracciones derivadas del material aportado.</p>
-            <p><strong>3. Privacidad y Enlaces:</strong> Sōi Group no almacena archivos multimedia. El sistema funciona mediante enlaces a plataformas administradas por el Cliente. Sōi se reserva el derecho de inhabilitar enlaces si se recibe una notificación legal.</p>
-          </div>
-          <label class="flex items-start space-x-3 cursor-pointer mt-3 pt-3 border-t border-blue-100">
-            <input type="checkbox" id="checkLegal" required class="mt-0.5 w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
-            <span class="text-xs font-bold text-slate-700">He leído y acepto los Términos de Personalización y asumo la responsabilidad por el contenido proporcionado.</span>
+          <h3 class="text-xs font-bold text-blue-900 uppercase">Acuerdo Legal</h3>
+          <label class="flex items-start space-x-3 cursor-pointer mt-3">
+            <input type="checkbox" required class="mt-0.5 w-4 h-4 text-blue-600 rounded">
+            <span class="text-xs font-bold text-slate-700">Acepto los términos de propiedad intelectual y eximo a Sōi Group de responsabilidad por el contenido proporcionado. (Verá los detalles en el PDF adjunto).</span>
           </label>
         </div>
 
-        <button type="submit" id="btnEnviar" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 px-6 rounded-xl transition shadow-lg text-sm tracking-wide">
-          ENVIAR SOLICITUD
-        </button>
-
+        <button type="submit" id="btnEnviar" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-xl shadow-lg text-sm tracking-wide">ENVIAR SOLICITUD</button>
       </form>
 
-      <!-- Mensaje de Éxito Oculto -->
       <div id="pantallaExito" class="hidden text-center py-10">
-        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-        </div>
-        <h2 class="text-2xl font-bold text-slate-800 mb-2">¡Solicitud Recibida!</h2>
-        <p class="text-sm text-slate-600 mb-6">Hemos enviado una copia a tu correo electrónico con los detalles y el acuerdo de términos.</p>
-        <p class="text-xs text-slate-400">El equipo de Sōi Group revisará la información antes de fabricar tu VIVO.</p>
+        <h2 class="text-2xl font-bold text-slate-800 mb-2">¡Recibido!</h2>
+        <p class="text-sm text-slate-600 mb-6">Hemos enviado el Acuerdo en PDF a tu correo.</p>
       </div>
-
     </div>
   </div>
 
@@ -137,73 +85,46 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-    const firebaseConfig = {
+    const app = initializeApp({
       apiKey: "AIzaSyD20eQRuXkW3ayx5l49lvd8nJ-X7Mar-WA",
       authDomain: "soi-nfc-db.firebaseapp.com",
-      projectId: "soi-nfc-db",
-      storageBucket: "soi-nfc-db.firebasestorage.app",
-      messagingSenderId: "421798963104",
-      appId: "1:421798963104:web:d6f0a37729d6d2eb86a6c5"
-    };
-
-    const app = initializeApp(firebaseConfig);
+      projectId: "soi-nfc-db"
+    });
     const db = getFirestore(app);
-
-    // URL de tu Google Apps Script
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-v68bkeXjw4b_KHdK6EFFSAWGDRMlpkCxHuDax-HdtQmuzLuKgWAnUztYlaTpsFu5jA/exec";
 
     document.getElementById('formCliente').onsubmit = async (e) => {
       e.preventDefault();
-      
       const btn = document.getElementById('btnEnviar');
-      const textOriginal = btn.innerText;
-      btn.innerText = "PROCESANDO...";
-      btn.disabled = true;
+      btn.innerText = "GENERANDO PDF..."; btn.disabled = true;
 
-      // Recopilar Datos
       const datos = {
         nombreCliente: document.getElementById('nombreCliente').value.trim(),
         emailCliente: document.getElementById('emailCliente').value.trim(),
         titulo: document.getElementById('titulo').value.trim(),
         subtitulo: document.getElementById('subtitulo').value.trim(),
         dedicatoria: document.getElementById('dedicatoria').value.trim(),
+        origenFoto: document.getElementById('origenFoto').value,
         fotoPrincipal: document.getElementById('fotoPrincipal').value.trim(),
+        plataformaAudio: document.getElementById('plataformaAudio').value,
         audioId: document.getElementById('audioId').value.trim(),
         fontTitulo: document.getElementById('fontTitulo').value,
         fontTexto: document.getElementById('fontTexto').value,
-        fechaSolicitud: serverTimestamp(),
+        colorFondo: document.getElementById('colorFondo').value,
+        colorPrincipal: document.getElementById('colorPrincipal').value,
+        colorTexto: document.getElementById('colorTexto').value,
         estado: 'pendiente'
       };
 
       try {
-        // 1. Guardar en Firebase (Buzón de Pendientes)
         await addDoc(collection(db, "solicitudes_pendientes"), datos);
-
-        // 2. Disparar Correo vía Google Apps Script
-        // Enviamos con text/plain para evitar bloqueos CORS estrictos del navegador
-        await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(datos)
-        });
-
-        // Mostrar Éxito
+        await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(datos) });
         document.getElementById('formCliente').classList.add('hidden');
         document.getElementById('pantallaExito').classList.remove('hidden');
-
       } catch (error) {
-        console.error("Error:", error);
-        alert("Ocurrió un error de conexión. Por favor, intenta de nuevo.");
-        btn.innerText = textOriginal;
-        btn.disabled = false;
+        alert("Ocurrió un error."); btn.innerText = "INTENTAR DE NUEVO"; btn.disabled = false;
       }
     };
   </script>
-
-  <style>
-    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-  </style>
 </body>
 </html>
